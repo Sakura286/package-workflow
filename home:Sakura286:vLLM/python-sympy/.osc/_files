@@ -1,0 +1,4 @@
+<directory name="python-sympy" rev="aa7f071ee3972709b4936563093d8773" srcmd5="aa7f071ee3972709b4936563093d8773">
+  <linkinfo project="home:Sakura286:PyTorch" package="python-sympy" srcmd5="b347663acdd0309dedf7f68355ff89ea" baserev="b347663acdd0309dedf7f68355ff89ea" lsrcmd5="e35b60699d879bd473688bd6f0bf1a26" />
+  <entry name="_service" md5="282afc3bc131499c57b644f0e2e58f41" size="314" mtime="1773368769" />
+</directory>

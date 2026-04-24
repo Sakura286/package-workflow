@@ -1,0 +1,6 @@
+<directory name="python-diffusers" rev="1" vrev="1" srcmd5="cc9a65e9c00d005f89cf12ce9a27d7fb">
+  <serviceinfo code="failed" xsrcmd5="5504fb8934c5179ea34c582fb1d434b1">
+    <error>service error: /srv/obs/service/50257/out/vllm-specs-1776944203.35af3a5/SPECS/python-diffusers/*: No such file or directory</error>
+  </serviceinfo>
+  <entry name="_service" md5="45a018c4b4b685c01f410cedccc2a36c" size="318" mtime="1776997879" />
+</directory>

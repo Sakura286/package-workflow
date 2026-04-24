@@ -1,0 +1,33 @@
+<project name="home:Sakura286:vLLM">
+  <package name="python-array-api-strict" state=" " />
+  <package name="python-audioop-lts" state=" " />
+  <package name="python-audioread" state=" " />
+  <package name="python-cbor2" state=" " />
+  <package name="python-cftime" state=" " />
+  <package name="python-dask" state=" " />
+  <package name="python-flexcache" state=" " />
+  <package name="python-flexparser" state=" " />
+  <package name="python-lazy-loader" state=" " />
+  <package name="python-librosa" state=" " />
+  <package name="python-llvmlite" state=" " />
+  <package name="python-locket" state=" " />
+  <package name="python-multiprocess" state=" " />
+  <package name="python-numba" state=" " />
+  <package name="python-partd" state=" " />
+  <package name="python-pint" state=" " />
+  <package name="python-pooch" state=" " />
+  <package name="python-scikit-learn" state=" " />
+  <package name="python-soundfile" state=" " />
+  <package name="python-soxr" state=" " />
+  <package name="python-standard-aifc" state=" " />
+  <package name="python-standard-chunk" state=" " />
+  <package name="python-standard-sunau" state=" " />
+  <package name="python-sympy" state=" " />
+  <package name="python-tabulate" state=" " />
+  <package name="python-toolz" state=" " />
+  <package name="python-torch" state=" " />
+  <package name="python-torchvision" state=" " />
+  <package name="python-xarray" state=" " />
+  <package name="python-xxhash" state=" " />
+  <package name="python-diffusers" state=" " />
+</project>

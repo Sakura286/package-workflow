@@ -1,0 +1,9 @@
+<services>
+  <service name="obs_scm">
+    <param name="scm">git</param>
+    <param name="url">ssh://git@git.openruyi.cn:54865/Sakura286/vllm-specs.git</param>
+    <param name="revision">main</param>
+    <param name="extract">SPECS/python-cftime/*</param>
+  </service>
+  <service name="download_files"/>
+</services>
