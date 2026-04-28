@@ -1,0 +1,3 @@
+[submodule "orig_code/pytorch"]
+	path = orig_code/pytorch
+	url = ssh://git@git.openruyi.cn:54865/Sakura286/rocm-specs.git

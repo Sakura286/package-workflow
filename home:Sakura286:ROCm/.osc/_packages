@@ -1,0 +1,5 @@
+<project name="home:Sakura286:ROCm">
+  <package name="ollama-new" state=" " />
+  <package name="python-torch" state=" " />
+  <package name="rocm-core" state=" " />
+</project>
