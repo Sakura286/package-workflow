@@ -1,0 +1,222 @@
+#!/usr/bin/env bash
+# =============================================================================
+# obs-ai-loop - Full automated OBS build + AI analysis + fix loop
+# =============================================================================
+# Usage:
+#   ./obs-ai-loop <project> <package> <repo> <arch> [max_iterations]
+#
+# This is the MAIN entry point. It:
+#   1. Calls obs-auto-build to trigger build & fetch log
+#   2. If build fails, presents the log + spec + source to the AI agent
+#   3. AI agent analyzes the error and proposes a fix
+#   4. Applies the fix to the spec
+#   5. Commits & pushes the fix
+#   6. Loops back to step 1
+#   7. Stops when build succeeds or max iterations reached
+#
+# The AI interaction happens via a "prompt file" that the user can feed
+# to their AI agent (Copilot, Claude, etc.), or via direct API if configured.
+# =============================================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+LOG_DIR="$WORKSPACE_ROOT/log"
+PROMPT_DIR="$WORKSPACE_ROOT/.ai-prompts"
+
+PROJECT="${1:?Usage: $0 <project> <package> <repo> <arch> [max_iterations]}"
+PACKAGE="${2:?}"
+REPO="${3:?}"
+ARCH="${4:?}"
+MAX_ITERATIONS="${5:-5}"
+
+# Determine spec path based on project
+case "$PROJECT" in
+    home:Sakura286:ROCm) SPECS_DIR="$WORKSPACE_ROOT/rocm-specs" ;;
+    home:Sakura286:vLLM) SPECS_DIR="$WORKSPACE_ROOT/vllm-specs" ;;
+    *) 
+        echo "Unknown project: $PROJECT"
+        echo "Supported: home:Sakura286:ROCm, home:Sakura286:vLLM"
+        exit 1
+        ;;
+esac
+
+SPEC_FILE="$SPECS_DIR/SPECS/$PACKAGE/$PACKAGE.spec"
+SOURCE_DIR="$WORKSPACE_ROOT/orig_code"
+
+log_info()  { echo "[AI-LOOP] $(date '+%H:%M:%S') $*"; }
+
+# --- Generate AI prompt from build failure ---
+generate_ai_prompt() {
+    local log_file="$1"
+    local iteration="$2"
+    local prompt_file="$PROMPT_DIR/prompt-iter${iteration}-$(date '+%Y%m%d-%H%M%S').md"
+    
+    mkdir -p "$PROMPT_DIR"
+    
+    # Extract the actual error from the log (last 200 lines, focusing on errors)
+    local error_snippet
+    error_snippet=$(grep -E "error:|Error:|ERROR:|FAILED|fatal" "$log_file" | tail -30 || echo "No specific error lines found")
+    
+    # Get the tail of the log for context
+    local log_tail
+    log_tail=$(tail -100 "$log_file")
+    
+    cat > "$prompt_file" << 'PROMPT_EOF'
+# OBS Build Failure Analysis - Iteration ITERATION_PLACEHOLDER
+
+## Context
+- **Project**: PROJECT_PLACEHOLDER
+- **Package**: PACKAGE_PLACEHOLDER  
+- **Repository**: REPO_PLACEHOLDER
+- **Architecture**: ARCH_PLACEHOLDER
+- **Spec File**: SPEC_FILE_PLACEHOLDER
+
+## Task
+The RPM build for this package has FAILED. Please analyze the error and propose a fix to the spec file.
+
+## Error Summary (from build log)
+```
+ERROR_PLACEHOLDER
+```
+
+## Build Log Tail (last 100 lines)
+```
+LOG_TAIL_PLACEHOLDER
+```
+
+## Instructions for the AI
+1. Analyze the error in the build log
+2. Identify the root cause (missing dependency, compile error, configuration issue, etc.)
+3. Propose a specific fix to the spec file at `SPEC_FILE_PLACEHOLDER`
+4. If the fix involves editing the spec, provide the exact changes needed
+5. If the fix involves patching source code, describe the patch needed
+6. Consider that this is a ROCm/HIP build environment with clang compiler
+
+## Response Format
+Please respond with:
+1. **Root Cause**: Brief explanation
+2. **Fix**: Description of the fix
+3. **Spec Changes**: If applicable, the exact diff to apply to the spec file
+4. **Patch Content**: If a source patch is needed, the full patch content
+PROMPT_EOF
+
+    # Replace placeholders
+    sed -i \
+        -e "s|ITERATION_PLACEHOLDER|$iteration|g" \
+        -e "s|PROJECT_PLACEHOLDER|$PROJECT|g" \
+        -e "s|PACKAGE_PLACEHOLDER|$PACKAGE|g" \
+        -e "s|REPO_PLACEHOLDER|$REPO|g" \
+        -e "s|ARCH_PLACEHOLDER|$ARCH|g" \
+        -e "s|SPEC_FILE_PLACEHOLDER|$SPEC_FILE|g" \
+        "$prompt_file"
+    
+    # Use Python to safely replace the multi-line placeholders
+    python3 -c "
+import sys
+with open('$prompt_file', 'r') as f:
+    content = f.read()
+content = content.replace('ERROR_PLACEHOLDER', '''$error_snippet''')
+content = content.replace('LOG_TAIL_PLACEHOLDER', '''$log_tail''')
+with open('$prompt_file', 'w') as f:
+    f.write(content)
+"
+    
+    echo "$prompt_file"
+}
+
+# --- Main loop ---
+main() {
+    mkdir -p "$LOG_DIR" "$PROMPT_DIR"
+    
+    log_info "============================================"
+    log_info "OBS AI Build-Fix Loop"
+    log_info "Project:   $PROJECT"
+    log_info "Package:   $PACKAGE"
+    log_info "Spec:      $SPEC_FILE"
+    log_info "Max iters: $MAX_ITERATIONS"
+    log_info "============================================"
+    
+    if [ ! -f "$SPEC_FILE" ]; then
+        log_info "ERROR: Spec file not found: $SPEC_FILE"
+        exit 1
+    fi
+    
+    for iteration in $(seq 1 "$MAX_ITERATIONS"); do
+        log_info ""
+        log_info "=========================================="
+        log_info "ITERATION $iteration / $MAX_ITERATIONS"
+        log_info "=========================================="
+        
+        # Step 1: Trigger build and wait for result
+        log_info "Step 1: Triggering OBS build..."
+        local build_result
+        build_result=$("$SCRIPT_DIR/obs-auto-build" "$PROJECT" "$PACKAGE" "$REPO" "$ARCH" 1 2>&1) || true
+        
+        # Find the log file from this build
+        local latest_log
+        latest_log=$(ls -t "$LOG_DIR/${PACKAGE}-${REPO}-iter"*".log" 2>/dev/null | head -1 || echo "")
+        
+        # Check if build succeeded
+        if echo "$build_result" | grep -q "RESULT: SUCCESS"; then
+            log_info "BUILD SUCCEEDED! No further action needed."
+            exit 0
+        fi
+        
+        # Step 2: Build failed - generate AI prompt
+        log_info "Step 2: Build failed, generating AI analysis prompt..."
+        
+        if [ -z "$latest_log" ] || [ ! -f "$latest_log" ]; then
+            log_info "ERROR: No log file found for this build"
+            exit 1
+        fi
+        
+        local prompt_file
+        prompt_file=$(generate_ai_prompt "$latest_log" "$iteration")
+        
+        log_info "============================================"
+        log_info "BUILD FAILED - AI PROMPT READY"
+        log_info "============================================"
+        log_info "Log file:    $latest_log"
+        log_info "Prompt file: $prompt_file"
+        log_info "Spec file:   $SPEC_FILE"
+        log_info ""
+        log_info "👉 Please feed the prompt to your AI agent to get a fix."
+        log_info "   Then apply the fix and re-run this script."
+        log_info ""
+        log_info "   Or, if you have an AI agent API configured,"
+        log_info "   the fix can be applied automatically."
+        log_info "============================================"
+        
+        # Step 3: Wait for user to apply fix (or auto-apply if configured)
+        # For now, we pause and let the user interact with the AI
+        echo ""
+        echo "The prompt has been saved to: $prompt_file"
+        echo ""
+        echo "Options:"
+        echo "  1. Copy the prompt to your AI agent, apply the fix, then press Enter to continue"
+        echo "  2. Type 'skip' to skip this iteration and re-trigger build"
+        echo "  3. Type 'quit' to exit the loop"
+        echo ""
+        read -r -p "Action [Enter=continue, skip, quit]: " user_action
+        
+        case "$user_action" in
+            quit|q)
+                log_info "User requested to quit"
+                exit 0
+                ;;
+            skip|s)
+                log_info "Skipping to next iteration..."
+                continue
+                ;;
+            *)
+                log_info "User applied fix, continuing to next iteration..."
+                ;;
+        esac
+    done
+    
+    log_info "Max iterations reached. Manual intervention may be needed."
+}
+
+main "$@"

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# =============================================================================
+# obs-check-status - Check build status of a package
+# =============================================================================
+# Usage:
+#   ./obs-check-status <project> <package> <repo> <arch>
+#
+# Output: Build state (succeeded, failed, building, etc.)
+# =============================================================================
+
+set -euo pipefail
+
+PROJECT="${1:?Usage: $0 <project> <package> <repo> <arch>}"
+PACKAGE="${2:?}"
+REPO="${3:?}"
+ARCH="${4:?}"
+
+# CSV format: "repo","arch","package","state","dirty","code","details"
+osc -A https://pickaxe.oerv.ac.cn results "$PROJECT" "$PACKAGE" \
+    -r "$REPO" -a "$ARCH" --csv 2>/dev/null | tail -1 | cut -d',' -f4 | tr -d '"'

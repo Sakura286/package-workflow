@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# =============================================================================
+# obs-trigger-build - Trigger a single OBS build and return the result
+# =============================================================================
+# Lightweight script that just triggers a build and reports the state.
+# Designed to be called by the AI agent.
+#
+# Usage:
+#   ./obs-trigger-build <project> <package> <repo> <arch>
+#
+# Output: JSON with build result
+# =============================================================================
+
+set -euo pipefail
+
+PROJECT="${1:?Usage: $0 <project> <package> <repo> <arch>}"
+PACKAGE="${2:?}"
+REPO="${3:?}"
+ARCH="${4:?}"
+
+# Trigger rebuild
+osc -A https://pickaxe.oerv.ac.cn service rr "$PROJECT" "$PACKAGE" 2>&1 || {
+    osc -A https://pickaxe.oerv.ac.cn rebuildpac "$PROJECT" "$PACKAGE" "$REPO" "$ARCH" 2>&1
+}
+
+echo "BUILD_TRIGGERED"

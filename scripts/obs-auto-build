@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+# =============================================================================
+# obs-auto-build - Automated OBS build-trigger-log-fix loop
+# =============================================================================
+# Usage:
+#   ./obs-auto-build <project> <package> <repo> <arch> [max_iterations]
+#
+# Example:
+#   ./obs-auto-build home:Sakura286:ROCm python-torch amd64_build x86_64 5
+#
+# This script:
+#   1. Triggers a rebuild of the package in OBS
+#   2. Waits for the build to finish (polling)
+#   3. Downloads the build log on failure
+#   4. Saves the log to the log/ directory
+#   5. Reports the result for AI analysis
+# =============================================================================
+
+set -euo pipefail
+
+# --- Configuration ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+LOG_DIR="$WORKSPACE_ROOT/log"
+
+PROJECT="${1:?Usage: $0 <project> <package> <repo> <arch> [max_iterations]}"
+PACKAGE="${2:?}"
+REPO="${3:?}"
+ARCH="${4:?}"
+MAX_ITERATIONS="${5:-5}"
+POLL_INTERVAL="${POLL_INTERVAL:-60}"  # seconds between status checks
+TIMEOUT="${TIMEOUT:-7200}"            # max wait per build in seconds
+
+# --- Helpers ---
+log_info()  { echo "[INFO]  $(date '+%H:%M:%S') $*"; }
+log_warn()  { echo "[WARN]  $(date '+%H:%M:%S') $*"; }
+log_error() { echo "[ERROR] $(date '+%H:%M:%S') $*"; }
+
+# Get the current build state for a package/repo/arch
+# CSV format: "repo","arch","package","state","dirty","code","details"
+get_build_state() {
+    osc -A https://pickaxe.oerv.ac.cn results "$PROJECT" "$PACKAGE" \
+        -r "$REPO" -a "$ARCH" --csv 2>/dev/null | tail -1 | cut -d',' -f4 | tr -d '"'
+}
+
+# Get the build log via osc remotebuildlog
+fetch_build_log() {
+    local log_file="$1"
+    log_info "Fetching build log from OBS..."
+    osc -A https://pickaxe.oerv.ac.cn rbl "$PROJECT" "$PACKAGE" "$REPO" "$ARCH" > "$log_file" 2>/dev/null || {
+        # Fallback to API
+        local api_path="/build/$PROJECT/$REPO/$ARCH/$PACKAGE/_log"
+        osc -A https://pickaxe.oerv.ac.cn api "$api_path" > "$log_file" 2>/dev/null || {
+            log_error "Could not retrieve build log"
+            return 1
+        }
+    }
+    log_info "Log saved to: $log_file ($(wc -l < "$log_file") lines)"
+}
+
+# Trigger a rebuild by re-running source services
+trigger_rebuild() {
+    log_info "Triggering rebuild for $PROJECT/$PACKAGE..."
+    osc -A https://pickaxe.oerv.ac.cn service rr "$PROJECT" "$PACKAGE" 2>&1 || {
+        log_warn "service rr failed, trying rebuildpac..."
+        osc -A https://pickaxe.oerv.ac.cn rebuildpac "$PROJECT" "$PACKAGE" "$REPO" "$ARCH" 2>&1 || {
+            log_error "Failed to trigger rebuild"
+            return 1
+        }
+    }
+    log_info "Rebuild triggered successfully"
+}
+
+# Wait for build to reach a terminal state
+wait_for_build() {
+    local start_time=$(date +%s)
+    local state=""
+    
+    while true; do
+        state=$(get_build_state)
+        log_info "Build state: $state"
+        
+        case "$state" in
+            succeeded|failed|unresolvable|broken|blocked|excluded)
+                echo "$state"
+                return 0
+                ;;
+            *)
+                local elapsed=$(($(date +%s) - start_time))
+                if [ "$elapsed" -gt "$TIMEOUT" ]; then
+                    log_error "Build timed out after ${TIMEOUT}s"
+                    echo "timeout"
+                    return 1
+                fi
+                sleep "$POLL_INTERVAL"
+                ;;
+        esac
+    done
+}
+
+# --- Main ---
+main() {
+    mkdir -p "$LOG_DIR"
+    
+    log_info "============================================"
+    log_info "OBS Auto-Build Loop"
+    log_info "Project:   $PROJECT"
+    log_info "Package:   $PACKAGE"
+    log_info "Repo:      $REPO"
+    log_info "Arch:      $ARCH"
+    log_info "Max iters: $MAX_ITERATIONS"
+    log_info "============================================"
+    
+    for iteration in $(seq 1 "$MAX_ITERATIONS"); do
+        log_info ""
+        log_info "--- Iteration $iteration / $MAX_ITERATIONS ---"
+        
+        # Step 1: Trigger rebuild
+        trigger_rebuild || {
+            log_error "Failed to trigger rebuild, aborting"
+            exit 1
+        }
+        
+        # Step 2: Wait for build to complete
+        local final_state
+        final_state=$(wait_for_build)
+        
+        # Step 3: Handle result
+        local timestamp=$(date '+%Y%m%d-%H%M%S')
+        local log_file="$LOG_DIR/${PACKAGE}-${REPO}-iter${iteration}-${timestamp}.log"
+        
+        case "$final_state" in
+            succeeded)
+                log_info "BUILD SUCCEEDED! 🎉"
+                # Still fetch log for reference
+                fetch_build_log "$log_file" || true
+                echo ""
+                echo "RESULT: SUCCESS on iteration $iteration"
+                echo "Log: $log_file"
+                exit 0
+                ;;
+            failed)
+                log_error "BUILD FAILED on iteration $iteration"
+                fetch_build_log "$log_file"
+                
+                # Extract error summary (last 50 lines)
+                echo ""
+                echo "=== ERROR SUMMARY (last 50 lines) ==="
+                tail -50 "$log_file"
+                echo "=== END ERROR SUMMARY ==="
+                echo ""
+                echo "RESULT: FAILED on iteration $iteration"
+                echo "Log: $log_file"
+                echo "Fix the spec and re-run, or let the AI agent analyze the log."
+                ;;
+            unresolvable)
+                log_error "BUILD UNRESOLVABLE - dependency issue"
+                fetch_build_log "$log_file"
+                echo "RESULT: UNRESOLVABLE on iteration $iteration"
+                echo "Log: $log_file"
+                exit 2
+                ;;
+            timeout)
+                log_error "BUILD TIMED OUT"
+                echo "RESULT: TIMEOUT on iteration $iteration"
+                exit 3
+                ;;
+            *)
+                log_error "Unexpected state: $final_state"
+                echo "RESULT: UNKNOWN ($final_state) on iteration $iteration"
+                exit 4
+                ;;
+        esac
+    done
+    
+    log_error "Max iterations ($MAX_ITERATIONS) reached without success"
+    exit 1
+}
+
+main "$@"

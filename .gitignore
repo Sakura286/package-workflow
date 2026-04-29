@@ -1,2 +1,5 @@
 openRuyi/
 vllm-specs/
+rocm-specs/
+log/
+orig_code/
