@@ -1,0 +1,10 @@
+<project name="home:Sakura286:BuddyCompiler">
+  <package name="python-audioop-lts" state=" " />
+  <package name="python-audioread" state=" " />
+  <package name="python-lazy-loader" state=" " />
+  <package name="python-pooch" state=" " />
+  <package name="python-soxr" state=" " />
+  <package name="python-standard-aifc" state=" " />
+  <package name="python-standard-chunk" state=" " />
+  <package name="python-standard-sunau" state=" " />
+</project>

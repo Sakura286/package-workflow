@@ -2,4 +2,5 @@
   <package name="ollama-new" state=" " />
   <package name="python-torch" state=" " />
   <package name="rocm-core" state=" " />
+  <package name="python-torch-rocm" state=" " />
 </project>

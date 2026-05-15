@@ -3,3 +3,5 @@ vllm-specs/
 rocm-specs/
 log/
 orig_code/
+.claude
+homepage

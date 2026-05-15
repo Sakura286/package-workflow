@@ -1,0 +1,373 @@
+<buildinfo project="home:Sakura286:ROCm" repository="amd64_build" package="python-torch" downloadurl="https://repo.build.openruyi.cn">
+  <arch>x86_64</arch>
+  <debuginfo>0</debuginfo>
+  <subpack>python-torch</subpack>
+  <bdep name="attr" preinstall="1" notmeta="1" version="2.5.2" release="3.7.or" arch="x86_64" hdrmd5="d5601ba0070d43278d8476d6fe1625ac" project="openruyi" repository="x86_64"/>
+  <bdep name="systemd-sysusers" preinstall="1" notmeta="1" version="259" release="10.17.or" arch="x86_64" hdrmd5="c890b5f2bc8ec6fb3bb5b4ea9ed3fdab" project="openruyi" repository="x86_64"/>
+  <bdep name="setup" preinstall="1" notmeta="1" version="2.15" release="11.8.or" arch="noarch" hdrmd5="1f94fd5085c33a7599685c9e33903871" project="openruyi" repository="x86_64"/>
+  <bdep name="gcc" preinstall="1" notmeta="1" version="15" release="4.14.or" arch="x86_64" hdrmd5="63e37942ba471d20cdc8ae100c21ec00" project="openruyi" repository="x86_64"/>
+  <bdep name="gcc-c++" preinstall="1" version="15" release="4.14.or" arch="x86_64" hdrmd5="225fb709d721f63b77a0f7ce97d28c21" project="openruyi" repository="x86_64"/>
+  <bdep name="expat" preinstall="1" notmeta="1" version="2.7.1" release="5.6.or" arch="x86_64" hdrmd5="f04e2aaed439b08e36ce52ffdce6af22" project="openruyi" repository="x86_64"/>
+  <bdep name="ncurses" preinstall="1" notmeta="1" version="6.5" release="5.4.or" arch="x86_64" hdrmd5="7b644034cda3c122041a4bf976fcadf3" project="openruyi" repository="x86_64"/>
+  <bdep name="filesystem" preinstall="1" notmeta="1" version="3.18" release="13.5.or" arch="x86_64" hdrmd5="220c146fa7cdfa074d03bec9324ad866" project="openruyi" repository="x86_64"/>
+  <bdep name="popt" preinstall="1" notmeta="1" version="1.19" release="3.6.or" arch="x86_64" hdrmd5="5a8597aee5166c54fbe6eebb3da01e2f" project="openruyi" repository="x86_64"/>
+  <bdep name="acl" preinstall="1" notmeta="1" version="2.3.2" release="6.11.or" arch="x86_64" hdrmd5="ff0c69e3f5e8bed4ad31862047c7182a" project="openruyi" repository="x86_64"/>
+  <bdep name="pam" preinstall="1" notmeta="1" version="1.7.1" release="7.18.or" arch="x86_64" hdrmd5="5c29a25a73bc4cdd25c80b7e977bf831" project="openruyi" repository="x86_64"/>
+  <bdep name="elfutils" preinstall="1" notmeta="1" version="0.194" release="5.18.or" arch="x86_64" hdrmd5="8c4f392a186943f8f06dc412963467b0" project="openruyi" repository="x86_64"/>
+  <bdep name="libxml2" preinstall="1" notmeta="1" version="2.14.5" release="5.5.or" arch="x86_64" hdrmd5="330827891ae26d4d778a79a899fe945b" project="openruyi" repository="x86_64"/>
+  <bdep name="gawk" preinstall="1" notmeta="1" version="5.4.0" release="5.1.or" arch="x86_64" hdrmd5="43b8e1732f5caba700dd721cdaad624a" project="openruyi" repository="x86_64"/>
+  <bdep name="linux-headers" preinstall="1" notmeta="1" version="6.18.18" release="9.8.or" arch="x86_64" hdrmd5="92b764455f28d0259da26f333b80e579" project="openruyi" repository="x86_64"/>
+  <bdep name="audit" preinstall="1" notmeta="1" version="4.1.4" release="5.5.or" arch="x86_64" hdrmd5="3ab79ca89478d5c04472c4f763af599e" project="openruyi" repository="x86_64"/>
+  <bdep name="rpm-build" preinstall="1" notmeta="1" version="4.20.1" release="7.17.or" arch="x86_64" hdrmd5="4d5778f0847a0e4a829341fe14508f9e" project="openruyi" repository="x86_64"/>
+  <bdep name="file" preinstall="1" notmeta="1" version="5.46" release="3.6.or" arch="x86_64" hdrmd5="f065a8a406367bfa2557beac8aa62bd4" project="openruyi" repository="x86_64"/>
+  <bdep name="rpm" preinstall="1" notmeta="1" version="4.20.1" release="7.17.or" arch="x86_64" hdrmd5="a466e363ea71a9bcb01d22c660032674" project="openruyi" repository="x86_64"/>
+  <bdep name="glibc" preinstall="1" notmeta="1" version="2.43" release="14.13.or" arch="x86_64" hdrmd5="a8e7705afbc4dbc8b4b6b110966e1e36" project="openruyi" repository="x86_64"/>
+  <bdep name="libeconf" preinstall="1" notmeta="1" version="0.7.8" release="4.16.or" arch="x86_64" hdrmd5="6a4354fcde80eb5cfc1595acb22f27dc" project="openruyi" repository="x86_64"/>
+  <bdep name="gmp" preinstall="1" notmeta="1" version="6.3.0" release="3.14.or" arch="x86_64" hdrmd5="4acdef4f76fb07c0ca8b2ab17dbb29cc" project="openruyi" repository="x86_64"/>
+  <bdep name="libselinux" preinstall="1" notmeta="1" version="3.10" release="5.18.or" arch="x86_64" hdrmd5="ec8fcb6279a96f9ff09c87eb6432b573" project="openruyi" repository="x86_64"/>
+  <bdep name="pcre2" preinstall="1" notmeta="1" version="10.45" release="5.4.or" arch="x86_64" hdrmd5="1980052d338e86a2ece444631a79dc4f" project="openruyi" repository="x86_64"/>
+  <bdep name="util-linux" preinstall="1" notmeta="1" version="2.41.3" release="11.10.or" arch="x86_64" hdrmd5="7a5937cdcc948b563613fddfa8049cb8" project="openruyi" repository="x86_64"/>
+  <bdep name="libcap" preinstall="1" notmeta="1" version="2.76" release="5.14.or" arch="x86_64" hdrmd5="53a726bf5d0f0a3f48c31da94b5f6dbd" project="openruyi" repository="x86_64"/>
+  <bdep name="zlib-ng-compat" preinstall="1" notmeta="1" version="2.3.3" release="8.12.or" arch="x86_64" hdrmd5="c493179eee034908f60e8b1c0c8b9af2" project="openruyi" repository="x86_64"/>
+  <bdep name="lua" preinstall="1" notmeta="1" version="5.4.8" release="4.3.or" arch="x86_64" hdrmd5="04e8a80f4628634d12a53e08beb1958b" project="openruyi" repository="x86_64"/>
+  <bdep name="bzip2" preinstall="1" notmeta="1" version="1.0.8" release="3.8.or" arch="x86_64" hdrmd5="f2911ba1f28d4160153bb8283d1f5f9b" project="openruyi" repository="x86_64"/>
+  <bdep name="libgcrypt" preinstall="1" notmeta="1" version="1.11.2" release="3.9.or" arch="x86_64" hdrmd5="964530ef81f0b3fb88df307bcfb785a3" project="openruyi" repository="x86_64"/>
+  <bdep name="bash" preinstall="1" notmeta="1" version="5.3.3" release="3.12.or" arch="x86_64" hdrmd5="44a109d2a3fefc4b3be7b99114fb5c02" project="openruyi" repository="x86_64"/>
+  <bdep name="coreutils" preinstall="1" notmeta="1" version="9.10" release="7.5.or" arch="x86_64" hdrmd5="01383b1e993c52660233f764002ded22" project="openruyi" repository="x86_64"/>
+  <bdep name="cpio" preinstall="1" notmeta="1" version="2.15" release="3.5.or" arch="x86_64" hdrmd5="060c3a073d297da47e30777189ba8bef" project="openruyi" repository="x86_64"/>
+  <bdep name="rpm-config-openruyi" preinstall="1" version="20251216" release="17.2.or" arch="noarch" hdrmd5="306b6ffa571d3748f82f520db7d7e472" project="openruyi" repository="x86_64"/>
+  <bdep name="zstd" preinstall="1" notmeta="1" version="1.5.7" release="3.13.or" arch="x86_64" hdrmd5="21a47b3fadd406c2086065ed66735639" project="openruyi" repository="x86_64"/>
+  <bdep name="xz" preinstall="1" notmeta="1" version="5.8.1" release="3.5.or" arch="x86_64" hdrmd5="42c07544bd3ad28b1d3a5ad80b59a352" project="openruyi" repository="x86_64"/>
+  <bdep name="libgpg-error" preinstall="1" notmeta="1" version="1.58" release="4.8.or" arch="x86_64" hdrmd5="93371c09bbbb66b415919a52b42024a1" project="openruyi" repository="x86_64"/>
+  <bdep name="gzip" preinstall="1" notmeta="1" version="1.14" release="4.4.or" arch="x86_64" hdrmd5="a7a2c4059a13351207816bc10ac5b2a6" project="openruyi" repository="x86_64"/>
+  <bdep name="tar" preinstall="1" notmeta="1" version="1.35" release="4.9.or" arch="x86_64" hdrmd5="5a73ead567927d9e574a4391a6bbff2c" project="openruyi" repository="x86_64"/>
+  <bdep name="patch" preinstall="1" notmeta="1" version="2.8" release="3.3.or" arch="x86_64" hdrmd5="86ebc10d6f574261a031034ebca5b831" project="openruyi" repository="x86_64"/>
+  <bdep name="lz4" preinstall="1" notmeta="1" version="1.10.0" release="4.3.or" arch="x86_64" hdrmd5="4122ce77cb77221c4afcd6039432579d" project="openruyi" repository="x86_64"/>
+  <bdep name="libgomp" preinstall="1" notmeta="1" version="15" release="4.14.or" arch="x86_64" hdrmd5="fb8b8f52ff2d5061988acffd9a01d86e" project="openruyi" repository="x86_64"/>
+  <bdep name="libgomp-gcc15" preinstall="1" notmeta="1" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="badac65d8d909281492034433b58d7a4" project="openruyi" repository="x86_64"/>
+  <bdep name="cmake" version="4.3.1" release="8.25.or" arch="x86_64" hdrmd5="37fb4c374476d5c010ae7c1c60400344" project="openruyi" repository="x86_64"/>
+  <bdep name="concurrentqueue-devel" version="1.0.4" release="2.10.or" arch="x86_64" hdrmd5="5da555eb4834b6a10bc9697ce6617710" project="openruyi" repository="x86_64"/>
+  <bdep name="eigen3" version="5.0.1" release="6.3.or" arch="x86_64" hdrmd5="c46e8b55fec637884d70c334a423192b" project="openruyi" repository="x86_64"/>
+  <bdep name="foxi-devel" version="0+git20260211.c278588" release="2.10.or" arch="x86_64" hdrmd5="b28a9ea8b1f1a62a6df18f71de425eda" project="openruyi" repository="x86_64"/>
+  <bdep name="libomp-devel" version="21.1.7" release="11.21.or" arch="x86_64" hdrmd5="38ddc7ff8ba5a7acb46b4543dd25cf36" project="openruyi" repository="x86_64"/>
+  <bdep name="ninja" version="1.13.2" release="5.14.or" arch="x86_64" hdrmd5="60a220bc37eb87e243a9b3e2aeeebdaa" project="openruyi" repository="x86_64"/>
+  <bdep name="pocketfft-devel" version="0+git20260211.076cb3d" release="2.9.or" arch="noarch" hdrmd5="76036a488dd307ae9fde88d1670ef238" project="openruyi" repository="x86_64"/>
+  <bdep name="pthreadpool-devel" version="0+git20260202.560c60d" release="3.10.or" arch="x86_64" hdrmd5="4ac672d2165adee2b5c80c12c9d833d0" project="openruyi" repository="x86_64"/>
+  <bdep name="fp16-devel" version="0+git20260202.3d2de18" release="3.17.or" arch="x86_64" hdrmd5="6522338a6948dfced056d052a3d87e37" project="openruyi" repository="x86_64"/>
+  <bdep name="fxdiv-devel" version="0+git20260202.63058ef" release="3.10.or" arch="x86_64" hdrmd5="f305a59dda1d5eb289dbab1474ddf3dd" project="openruyi" repository="x86_64"/>
+  <bdep name="psimd-devel" version="0+git20250805.072586a" release="4.3.or" arch="x86_64" hdrmd5="79ea884bc4159ad873321f8326867558" project="openruyi" repository="x86_64"/>
+  <bdep name="sleef-devel" version="3.9.0" release="2.14.or" arch="x86_64" hdrmd5="76bd9208be78743dbf04eb8661f61f09" project="openruyi" repository="x86_64"/>
+  <bdep name="xnnpack-devel" version="0+git20260211.312eb7e" release="2.19.or" arch="x86_64" hdrmd5="9025d78b8e92a8067b03aebf18211ea3" project="openruyi" repository="x86_64"/>
+  <bdep name="gcc-fortran" version="15" release="4.14.or" arch="x86_64" hdrmd5="45e4629d53a3d5e5955f96af348219ca" project="openruyi" repository="x86_64"/>
+  <bdep name="fmt-devel" version="12.0.0" release="4.13.or" arch="x86_64" hdrmd5="9bb6b044be8af002647c366beef99d82" project="openruyi" repository="x86_64"/>
+  <bdep name="cpuinfo-devel" version="0+git20260202.877328f" release="4.13.or" arch="x86_64" hdrmd5="c68eefbe706d8a564f2c90ef4528fe6d" project="openruyi" repository="x86_64"/>
+  <bdep name="nlohmann-json" version="3.12.0" release="4.10.or" arch="x86_64" hdrmd5="8348f0d4343bd55e4ba80ecf6278494a" project="openruyi" repository="x86_64"/>
+  <bdep name="numactl-devel" version="2.0.19" release="4.4.or" arch="x86_64" hdrmd5="dd2095c7ff469a397aebd249c0b75ea1" project="openruyi" repository="x86_64"/>
+  <bdep name="openblas-devel" version="0.3.31" release="7.3.or" arch="x86_64" hdrmd5="0754db5d3c88fa1d7573f1a940a7cd41" project="openruyi" repository="x86_64"/>
+  <bdep name="protobuf-devel" version="33.2" release="5.11.or" arch="x86_64" hdrmd5="462d9648b02155491e289974bed6ae7d" project="openruyi" repository="x86_64"/>
+  <bdep name="valgrind-devel" version="3.26.0" release="6.17.or" arch="x86_64" hdrmd5="178ffb441d2f635283105325cb85eda4" project="openruyi" repository="x86_64"/>
+  <bdep name="python-filelock" version="3.20.0" release="3.26.or" arch="noarch" hdrmd5="dc7384f82dbd266cb9f53315cd7869bb" project="openruyi" repository="x86_64"/>
+  <bdep name="python-jinja2" version="3.1.6" release="4.6.or" arch="noarch" hdrmd5="3d23b036e408a78853abcab6250b487c" project="openruyi" repository="x86_64"/>
+  <bdep name="python-networkx" version="3.6.1" release="3.4.or" arch="noarch" hdrmd5="f07e58363138b0c399f5578b8330275b" project="openruyi" repository="x86_64"/>
+  <bdep name="python-numpy" version="2.4.0" release="5.7.or" arch="x86_64" hdrmd5="69a86f24541338f992f31cb14f3b32ea" project="openruyi" repository="x86_64"/>
+  <bdep name="python-pip" version="25.3" release="4.2.or" arch="noarch" hdrmd5="1839b7b1f0d56cd357c9a3f49610ed3f" project="openruyi" repository="x86_64"/>
+  <bdep name="python-pybind11" version="3.0.1" release="2.22.or" arch="x86_64" hdrmd5="007f3cdbc862349570c6cff82db2c46e" project="openruyi" repository="x86_64"/>
+  <bdep name="python-PyYAML" version="6.0.2" release="3.21.or" arch="x86_64" hdrmd5="e9444aaaa0b07e55506d167ea6b40c35" project="openruyi" repository="x86_64"/>
+  <bdep name="python3-setuptools" version="80.9.0" release="3.21.or" arch="noarch" hdrmd5="cd3fe1bf5a4b99e580ba3c53538ab0ed" project="openruyi" repository="x86_64"/>
+  <bdep name="python-sympy" version="1.14.0" release="3.21.or" arch="noarch" hdrmd5="e3e1bde5f21f138601c0a630369b04d8" project="openruyi" repository="x86_64"/>
+  <bdep name="python-typing-extensions" version="4.15.0" release="4.3.or" arch="noarch" hdrmd5="d99172ef49452c3a8504ee05517f35e3" project="openruyi" repository="x86_64"/>
+  <bdep name="libstdc++-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="9ec0b8a32c10eb3fc2af94108b9bbf9c" project="openruyi" repository="x86_64"/>
+  <bdep name="cmake-rpm-macros" version="4.3.1" release="8.25.or" arch="noarch" hdrmd5="5b22d73d48bff54d10d9a90c62437f9f" project="openruyi" repository="x86_64"/>
+  <bdep name="cmake-filesystem" version="4.3.1" release="8.25.or" arch="x86_64" hdrmd5="37381efadb53be1d87585975b47d986e" project="openruyi" repository="x86_64"/>
+  <bdep name="cmake-data" version="4.3.1" release="8.25.or" arch="noarch" hdrmd5="81e53bb5a6e5630b08b38560a4515441" project="openruyi" repository="x86_64"/>
+  <bdep name="foxi" version="0+git20260211.c278588" release="2.10.or" arch="x86_64" hdrmd5="9bbc9647f7100c5bd61b52cbc12f868c" project="openruyi" repository="x86_64"/>
+  <bdep name="clang-resource-filesystem" version="21.1.7" release="11.21.or" arch="x86_64" hdrmd5="5e16ca5d38d11a04f4f6e37c8a2a0906" project="openruyi" repository="x86_64"/>
+  <bdep name="libomp" version="21.1.7" release="11.21.or" arch="x86_64" hdrmd5="1a5b7c9b73042b5a5aab9c6fece309f7" project="openruyi" repository="x86_64"/>
+  <bdep name="pthreadpool" version="0+git20260202.560c60d" release="3.10.or" arch="x86_64" hdrmd5="8835c426d1ffbe07cee193f66cb66db3" project="openruyi" repository="x86_64"/>
+  <bdep name="sleef" version="3.9.0" release="2.14.or" arch="x86_64" hdrmd5="0394fd97d3755468fee871920dc8664e" project="openruyi" repository="x86_64"/>
+  <bdep name="xnnpack" version="0+git20260211.312eb7e" release="2.19.or" arch="x86_64" hdrmd5="5c287416657c87b2c26a6b4e2ff490bf" project="openruyi" repository="x86_64"/>
+  <bdep name="gcc15-c++" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="b86c9f645604d0e9bcad343b5f007ca7" project="openruyi" repository="x86_64"/>
+  <bdep name="gcc15-fortran" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="1d9a231e7bd717779fbea9cbc6136136" project="openruyi" repository="x86_64"/>
+  <bdep name="fmt" version="12.0.0" release="4.13.or" arch="x86_64" hdrmd5="863a80e74af7599cee65121c20be066a" project="openruyi" repository="x86_64"/>
+  <bdep name="numactl" version="2.0.19" release="4.4.or" arch="x86_64" hdrmd5="04d682ef650860b51b1e194546a7a6b4" project="openruyi" repository="x86_64"/>
+  <bdep name="openblas" version="0.3.31" release="7.3.or" arch="x86_64" hdrmd5="d27b1367ea5467eecd01840cfc629854" project="openruyi" repository="x86_64"/>
+  <bdep name="abseil-cpp" version="20260107.0" release="8.4.or" arch="x86_64" hdrmd5="35f7d09f8420f0cca86e36b51d9464c5" project="openruyi" repository="x86_64"/>
+  <bdep name="protobuf" version="33.2" release="5.11.or" arch="x86_64" hdrmd5="8d671780b350f8e574d6006aa77a3b21" project="openruyi" repository="x86_64"/>
+  <bdep name="abseil-cpp-devel" version="20260107.0" release="8.4.or" arch="x86_64" hdrmd5="c2a3e84e5ac9f2555470290c27d0f1c7" project="openruyi" repository="x86_64"/>
+  <bdep name="valgrind" version="3.26.0" release="6.17.or" arch="x86_64" hdrmd5="4b85be388a8415c7a8dbe330b33f7236" project="openruyi" repository="x86_64"/>
+  <bdep name="python-markupsafe" version="3.0.2" release="5.2.or" arch="x86_64" hdrmd5="932cbd09283c64ac29d085f0f793998d" project="openruyi" repository="x86_64"/>
+  <bdep name="ca-certificates" version="20251015" release="3.10.or" arch="x86_64" hdrmd5="cb03d938dfb63ed4f5fce3d0106f9fc4" project="openruyi" repository="x86_64"/>
+  <bdep name="pybind11-devel" version="3.0.1" release="2.22.or" arch="x86_64" hdrmd5="298336ac64b52ead03c127d07224b64d" project="openruyi" repository="x86_64"/>
+  <bdep name="libyaml" version="0.2.5" release="4.5.or" arch="x86_64" hdrmd5="c5d28b6cb27b9aac4e088fc04b549fa1" project="openruyi" repository="x86_64"/>
+  <bdep name="python-mpmath" version="1.3.0" release="4.3.or" arch="noarch" hdrmd5="d0c92ba83570531753133a772ba25dbc" project="openruyi" repository="x86_64"/>
+  <bdep name="llvm-libs" version="21.1.7" release="11.21.or" arch="x86_64" hdrmd5="587c8d4105863319d70ca42717c66bb6" project="openruyi" repository="x86_64"/>
+  <bdep name="mpfr" version="4.2.2" release="3.5.or" arch="x86_64" hdrmd5="efb629ab4e81c28f5dc60aae06c00fc0" project="openruyi" repository="x86_64"/>
+  <bdep name="isl" version="0.27" release="3.6.or" arch="x86_64" hdrmd5="c799ffd16701e5f6fa7188b9fc4d1c49" project="openruyi" repository="x86_64"/>
+  <bdep name="mpc" version="1.4.1" release="4.2.or" arch="x86_64" hdrmd5="c55fe5692b65a3e06f4f3956f459feea" project="openruyi" repository="x86_64"/>
+  <bdep name="gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="5a03560ea98e57975e4c71cecaed04bd" project="openruyi" repository="x86_64"/>
+  <bdep name="libstdc++-devel-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="509f8ba665f4826967597b66d402dea5" project="openruyi" repository="x86_64"/>
+  <bdep name="libquadmath-devel-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="7aa736a29759c7f115af49ecf0726164" project="openruyi" repository="x86_64"/>
+  <bdep name="libgfortran-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="df71174396c59fa05ac3a8c824cbc465" project="openruyi" repository="x86_64"/>
+  <bdep name="libatomic-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="4438aa4dc57c39325c9583f0692b5575" project="openruyi" repository="x86_64"/>
+  <bdep name="abseil-cpp-testing" version="20260107.0" release="8.4.or" arch="x86_64" hdrmd5="9da917bfcd13739e24751a8cfce1e4b4" project="openruyi" repository="x86_64"/>
+  <bdep name="p11-kit" version="0.25.5" release="4.16.or" arch="x86_64" hdrmd5="24018bb130b29cc74598ef8195d5802c" project="openruyi" repository="x86_64"/>
+  <bdep name="ca-certificates-mozilla" version="2.84" release="4.17.or" arch="x86_64" hdrmd5="323132f49862af37bf8a569ca2a7f7b5" project="openruyi" repository="x86_64"/>
+  <bdep name="libffi" version="3.5.2" release="4.7.or" arch="x86_64" hdrmd5="3f21fa78201e1558a1635f0cce86e702" project="openruyi" repository="x86_64"/>
+  <bdep name="libedit" version="20250104.3.1" release="4.6.or" arch="x86_64" hdrmd5="eef8359dfa0153076450da6ffe3d6131" project="openruyi" repository="x86_64"/>
+  <bdep name="llvm-filesystem" version="21.1.7" release="11.21.or" arch="x86_64" hdrmd5="e884e22039f6dc208145138cb4b9bea6" project="openruyi" repository="x86_64"/>
+  <bdep name="glibc-devel" version="2.43" release="14.13.or" arch="x86_64" hdrmd5="f1d3a6dcb96b643b94316d74b50685ca" project="openruyi" repository="x86_64"/>
+  <bdep name="cpp15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="676aeb15870662fdac012eeb9e9b5fc0" project="openruyi" repository="x86_64"/>
+  <bdep name="libasan-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="d3a7548ac851fbb676c7aa1fedfa806a" project="openruyi" repository="x86_64"/>
+  <bdep name="libhwasan-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="5ff3d43a2e0cc0cf8903c04a839d8e76" project="openruyi" repository="x86_64"/>
+  <bdep name="libitm-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="a18a31f6feaefa42086fa937b9632abc" project="openruyi" repository="x86_64"/>
+  <bdep name="liblsan-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="06106db911bdf87c67ba8f008f1883fc" project="openruyi" repository="x86_64"/>
+  <bdep name="libtsan-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="5690f1fa9ca4c32d89c3d7101f0804fb" project="openruyi" repository="x86_64"/>
+  <bdep name="libubsan-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="f4db2f84b06a27ee6cf73230e1e58a54" project="openruyi" repository="x86_64"/>
+  <bdep name="libquadmath-gcc15" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="9c3171433ea42b4498a01282dab8cffa" project="openruyi" repository="x86_64"/>
+  <bdep name="readline" version="8.3" release="3.6.or" arch="x86_64" hdrmd5="90650bd96c65a56945446450d7a021af" project="openruyi" repository="x86_64"/>
+  <bdep name="gtest" version="1.17.0" release="3.17.or" arch="x86_64" hdrmd5="db2af80915256b0d9bf31aff1d09089f" project="openruyi" repository="x86_64"/>
+  <bdep name="gmock" version="1.17.0" release="3.17.or" arch="x86_64" hdrmd5="e95654c2ab0a962a98a6f503b225c15c" project="openruyi" repository="x86_64"/>
+  <bdep name="systemd-libs" version="259" release="10.17.or" arch="x86_64" hdrmd5="65865b3b264732949ac32fbc00393398" project="openruyi" repository="x86_64"/>
+  <bdep name="libtasn1" version="4.20.0" release="3.5.or" arch="x86_64" hdrmd5="778b7008fee3e2efebad4d6c9f768ed6" project="openruyi" repository="x86_64"/>
+  <bdep name="openruyi-release" version="2" release="2.6.or" arch="x86_64" hdrmd5="6e2f332a61a2b1c26e80692beabd254e" project="openruyi" repository="x86_64"/>
+  <bdep name="chkconfig" version="1.33" release="6.13.or" arch="x86_64" hdrmd5="a2f037e593cad4d2cc7d035b4c91c69e" project="openruyi" repository="x86_64"/>
+  <bdep name="libxcrypt-devel" version="4.5.2" release="5.4.or" arch="x86_64" hdrmd5="fc01a1da13cdefcbff3f0d417b9c9744" project="openruyi" repository="x86_64"/>
+  <bdep name="libsepol" version="3.10" release="5.6.or" arch="x86_64" hdrmd5="ca0fd4f7a7c4f9ee283d05fd6accc779" project="openruyi" repository="x86_64"/>
+  <bdep name="newt" version="0.52.25" release="4.9.or" arch="x86_64" hdrmd5="c4d52f77ee78589464545a71371a1e64" project="openruyi" repository="x86_64"/>
+  <bdep name="pkgconf-pkg-config" version="2.5.1" release="7.1.or" arch="x86_64" hdrmd5="e75cee490c51193aa17d580a620913e7" project="openruyi" repository="x86_64"/>
+  <bdep name="libxcrypt" version="4.5.2" release="5.4.or" arch="x86_64" hdrmd5="abdf05030c9b3d7542a1cd20a3cb77c3" project="openruyi" repository="x86_64"/>
+  <bdep name="slang" version="2.3.3" release="4.11.or" arch="x86_64" hdrmd5="40dd65959a094aeb154dd559cb58ccd2" project="openruyi" repository="x86_64"/>
+  <bdep name="pkgconf" version="2.5.1" release="7.1.or" arch="x86_64" hdrmd5="992167ee567d9d50c1d811c7b30261ee" project="openruyi" repository="x86_64"/>
+  <bdep name="pkgconf-m4" version="2.5.1" release="7.1.or" arch="noarch" hdrmd5="c773fa62d1f11328b010a50e4dc4126e" project="openruyi" repository="x86_64"/>
+  <bdep name="libpng" version="1.6.55" release="6.2.or" arch="x86_64" hdrmd5="03b5af80043033eee3b19b2c4302e667" project="openruyi" repository="x86_64"/>
+  <bdep name="libpkgconf7" version="2.5.1" release="7.1.or" arch="x86_64" hdrmd5="05bf3d50635b499ee50b2cbf67d689cd" project="openruyi" repository="x86_64"/>
+  <bdep name="python3-devel" version="3.13.8" release="8.9.or" arch="x86_64" hdrmd5="c5ad5dd85e762072090ba1bb78e72558" project="openruyi" repository="x86_64"/>
+  <bdep name="python3" version="3.13.8" release="8.9.or" arch="x86_64" hdrmd5="219180a8ff727b7770985d40eaf249b4" project="openruyi" repository="x86_64"/>
+  <bdep name="python-rpm-macros" version="3.13" release="2.4.or" arch="noarch" hdrmd5="30c7ee11207b978e92d4cab635f37844" project="openruyi" repository="x86_64"/>
+  <bdep name="unzip" version="6.0" release="3.5.or" arch="x86_64" hdrmd5="8f32d15b3bd6c4c06dd9919e8a0a3984" project="openruyi" repository="x86_64"/>
+  <bdep name="pyproject-rpm-macros" version="1.18.3" release="2.36.or" arch="noarch" hdrmd5="99adbc1a7c5749f6f5a57615dd235a72" project="openruyi" repository="x86_64"/>
+  <bdep name="python3-rpm-macros" version="3.13" release="2.4.or" arch="noarch" hdrmd5="19f3f34d3a3fa50b763429ab576661b0" project="openruyi" repository="x86_64"/>
+  <bdep name="python3-rpm-generators" version="14" release="4.1.or" arch="noarch" hdrmd5="581425356895ef2f4ba696b5e3c0df0f" project="openruyi" repository="x86_64"/>
+  <bdep name="python3-libs" version="3.13.8" release="8.9.or" arch="x86_64" hdrmd5="c25ca6d7e807bcb16403d5c5f2224194" project="openruyi" repository="x86_64"/>
+  <bdep name="python-srpm-macros" version="3.13" release="2.4.or" arch="noarch" hdrmd5="6b84386acdac8cc75a59240b86ae7a25" project="openruyi" repository="x86_64"/>
+  <bdep name="openssl" version="3.5.2" release="6.3.or" arch="x86_64" hdrmd5="cf4155b54d4576742979bc560cc91c24" project="openruyi" repository="x86_64"/>
+  <bdep name="libuuid" version="2.41.3" release="11.10.or" arch="x86_64" hdrmd5="25da96d0ce3ebbe6ebcd63f7c98e8ccf" project="openruyi" repository="x86_64"/>
+  <bdep name="sqlite" version="3.50.4" release="7.4.or" arch="x86_64" hdrmd5="31c78da2f6b55112427a92b9f27e9c50" project="openruyi" repository="x86_64"/>
+  <bdep name="gdbm-libs" version="1.26" release="4.10.or" arch="x86_64" hdrmd5="c876187f78fd0c450003f4b8e50ff042" project="openruyi" repository="x86_64"/>
+  <bdep name="mpdecimal" version="4.0.1" release="3.9.or" arch="x86_64" hdrmd5="20bcd6da60501310cd575f2413378edf" project="openruyi" repository="x86_64"/>
+  <bdep name="python-pip-wheel" version="25.3" release="4.2.or" arch="noarch" hdrmd5="aff8042ac55e5be03ccb9c167b73d716" project="openruyi" repository="x86_64"/>
+  <bdep name="jitterentropy" version="3.6.3" release="3.11.or" arch="x86_64" hdrmd5="909e11e722c460218f29b1de6d967a05" project="openruyi" repository="x86_64"/>
+  <bdep name="python-packaging" version="25.0" release="3.1.or" arch="noarch" hdrmd5="b6342224b03300beeda4058115a9ef97" project="openruyi" repository="x86_64"/>
+  <bdep name="glibc-gconv-modules-extra" notmeta="1" version="2.43" release="14.13.or" arch="x86_64" hdrmd5="a4a4abcd209352180fd581b696648079" project="openruyi" repository="x86_64"/>
+  <bdep name="systemd-rpm-macros" notmeta="1" version="259" release="10.17.or" arch="noarch" hdrmd5="b0dcc3693b85c728daa22f8d5e88e754" project="openruyi" repository="x86_64"/>
+  <bdep name="mold" notmeta="1" version="2.41.0" release="6.3.or" arch="x86_64" hdrmd5="1cd9635f1414061ea5cc5f830e86202f" project="openruyi" repository="x86_64"/>
+  <bdep name="perl" notmeta="1" version="5.42.0" release="6.5.or" arch="x86_64" hdrmd5="404185bcf3c8b3d4b0d5a7b9c71b58c6" project="openruyi" repository="x86_64"/>
+  <bdep name="cpp" notmeta="1" version="15" release="4.14.or" arch="x86_64" hdrmd5="9a23c189ea24ce3e9ee54ba9b744e7b0" project="openruyi" repository="x86_64"/>
+  <bdep name="sed" notmeta="1" version="4.9" release="3.8.or" arch="x86_64" hdrmd5="2fb142a3c68a8b312bfc0b1f83a32771" project="openruyi" repository="x86_64"/>
+  <bdep name="grep" notmeta="1" version="3.12" release="3.6.or" arch="x86_64" hdrmd5="7d11320152ea0a8f0f67772ba8fc45dc" project="openruyi" repository="x86_64"/>
+  <bdep name="diffutils" notmeta="1" version="3.12" release="4.4.or" arch="x86_64" hdrmd5="c0e204f5c50c43013109068aaa870a76" project="openruyi" repository="x86_64"/>
+  <bdep name="findutils" notmeta="1" version="4.10.0" release="3.11.or" arch="x86_64" hdrmd5="48a0eb9634f7ada6ecb4937a45b5e965" project="openruyi" repository="x86_64"/>
+  <bdep name="m4" notmeta="1" version="1.4.21" release="6.8.or" arch="x86_64" hdrmd5="5a5ddacf593020b85d30188fb51c7de1" project="openruyi" repository="x86_64"/>
+  <bdep name="gcc15-lib" notmeta="1" version="15.2.0" release="12.4.or" arch="x86_64" hdrmd5="dde95a46a20126ece5d9a8ca069eeaab" project="openruyi" repository="x86_64"/>
+  <bdep name="perl-rpm-packaging" notmeta="1" version="1.2" release="2.4.or" arch="noarch" hdrmd5="daf97f6f82052cfd2a0a3d97d832ccc6" project="openruyi" repository="x86_64"/>
+  <bdep name="make" notmeta="1" version="4.4.1" release="3.10.or" arch="x86_64" hdrmd5="d0cc98ba5b122f0a88c103c5e754aff0" project="openruyi" repository="x86_64"/>
+  <bdep name="tzdata" notmeta="1" version="2026a" release="6.8.or" arch="x86_64" hdrmd5="46cc7e300012ae564bad77e5c00a007d" project="openruyi" repository="x86_64"/>
+  <bdep name="binutils" notmeta="1" version="2.46.0" release="10.3.or" arch="x86_64" hdrmd5="b2c703614e9b9f6d812baafbd72cdbff" project="openruyi" repository="x86_64"/>
+  <bdep name="systemd-shared" notmeta="1" version="259" release="10.17.or" arch="x86_64" hdrmd5="4d6c0d7ed58338117ef1a817ab400afc" project="openruyi" repository="x86_64"/>
+  <bdep name="openruyi-authselect-profiles" notmeta="1" version="1.6.1" release="9.5.or" arch="noarch" hdrmd5="e9bc579b95736b3e104bdc4a8e8c9129" project="openruyi" repository="x86_64"/>
+  <bdep name="libelf" notmeta="1" version="0.194" release="5.18.or" arch="x86_64" hdrmd5="7b3e2c2b02625aa82758b59c7bda85ee" project="openruyi" repository="x86_64"/>
+  <bdep name="libdebuginfod-dummy" notmeta="1" version="0.194" release="5.18.or" arch="x86_64" hdrmd5="29f4d456305c420d6daf0b52748882c4" project="openruyi" repository="x86_64"/>
+  <bdep name="libarchive" notmeta="1" version="3.8.7" release="5.1.or" arch="x86_64" hdrmd5="dc99a486cc101dd705aa7c56d6d2e037" project="openruyi" repository="x86_64"/>
+  <bdep name="which" notmeta="1" version="2.23" release="3.4.or" arch="x86_64" hdrmd5="71a437f1df01768c18243e2cb96739c0" project="openruyi" repository="x86_64"/>
+  <bdep name="glibc-locale-base" notmeta="1" version="2.43" release="14.13.or" arch="x86_64" hdrmd5="20cbe1cf1e20e250ce64e9c31dec9bd3" project="openruyi" repository="x86_64"/>
+  <bdep name="dwz" notmeta="1" version="0.16" release="4.24.or" arch="x86_64" hdrmd5="da6014afbc3b03ffba9a73efa120397e" project="openruyi" repository="x86_64"/>
+  <bdep name="gettext-tools" notmeta="1" version="1.0" release="5.8.or" arch="x86_64" hdrmd5="e13d96f91c724e7fc2ca57a7182e1b6f" project="openruyi" repository="x86_64"/>
+  <bdep name="debugedit" notmeta="1" version="5.3" release="5.3.or" arch="x86_64" hdrmd5="f96553cee8a51e07711a0191e14c9ac3" project="openruyi" repository="x86_64"/>
+  <bdep name="libblkid" notmeta="1" version="2.41.3" release="11.10.or" arch="x86_64" hdrmd5="fe19f90c706db2140dfc98719fe276c3" project="openruyi" repository="x86_64"/>
+  <bdep name="libcap-ng" notmeta="1" version="0.8.5" release="4.6.or" arch="x86_64" hdrmd5="10c8749243ec957a916fd43c1ae10908" project="openruyi" repository="x86_64"/>
+  <bdep name="libmount" notmeta="1" version="2.41.3" release="11.10.or" arch="x86_64" hdrmd5="7f354b35bc6d33c9b346ef0170b32a9d" project="openruyi" repository="x86_64"/>
+  <bdep name="libfdisk" notmeta="1" version="2.41.3" release="11.10.or" arch="x86_64" hdrmd5="16d1a401d8bfa3f60533182a6f310b27" project="openruyi" repository="x86_64"/>
+  <bdep name="liblastlog2" notmeta="1" version="2.41.3" release="11.10.or" arch="x86_64" hdrmd5="6b86d042b41d5e1cded1a4d8f61b4d03" project="openruyi" repository="x86_64"/>
+  <bdep name="libsmartcols" notmeta="1" version="2.41.3" release="11.10.or" arch="x86_64" hdrmd5="30896e3f96664fc82d0919318cbb446f" project="openruyi" repository="x86_64"/>
+  <bdep name="blake3" notmeta="1" version="1.8.4" release="8.3.or" arch="x86_64" hdrmd5="3a61734a2c70c7bc8d308faf47c69632" project="openruyi" repository="x86_64"/>
+  <bdep name="tbb" notmeta="1" version="2022.3.0" release="9.3.or" arch="x86_64" hdrmd5="95cbe71f8750c8fe5cd644c19ff65202" project="openruyi" repository="x86_64"/>
+  <bdep name="mimalloc" notmeta="1" version="3.1.5" release="4.10.or" arch="x86_64" hdrmd5="781c7870aeacf2f0931973dc6b6882df" project="openruyi" repository="x86_64"/>
+  <bdep name="libpwquality" notmeta="1" version="1.4.5" release="5.10.or" arch="x86_64" hdrmd5="f5427729ec3072168809c13f02bd4bb1" project="openruyi" repository="x86_64"/>
+  <bdep name="systemd-pam" notmeta="1" version="259" release="10.17.or" arch="x86_64" hdrmd5="671a24738dfec6545330f61be312abd0" project="openruyi" repository="x86_64"/>
+  <bdep name="authselect" notmeta="1" version="1.6.1" release="9.5.or" arch="x86_64" hdrmd5="276a553254dabec971da732b82e23453" project="openruyi" repository="x86_64"/>
+  <bdep name="libunistring" notmeta="1" version="1.4.2" release="4.2.or" arch="x86_64" hdrmd5="af96edd9b0c1184a19df1685ad193057" project="openruyi" repository="x86_64"/>
+  <bdep name="gettext-runtime" notmeta="1" version="1.0" release="5.8.or" arch="x86_64" hdrmd5="dfbe1e46bfc8d073aa8ea4d750ce248e" project="openruyi" repository="x86_64"/>
+  <bdep name="cracklib" notmeta="1" version="2.10.3" release="3.6.or" arch="x86_64" hdrmd5="eb7310d328454c2b19e435374ebefbc8" project="openruyi" repository="x86_64"/>
+  <bdep name="envsubst" notmeta="1" version="1.0" release="5.8.or" arch="x86_64" hdrmd5="23bc0da79fefba7ca61cbed33f95655c" project="openruyi" repository="x86_64"/>
+  <bdep name="systemd-udev" notmeta="1" version="259" release="10.17.or" arch="x86_64" hdrmd5="75103cf747c28eda39c75ea905838a50" project="openruyi" repository="x86_64"/>
+  <bdep name="kbd" notmeta="1" version="2.8.0" release="5.5.or" arch="x86_64" hdrmd5="ac856a0969f2786deb88578e17afa8e0" project="openruyi" repository="x86_64"/>
+  <bdep name="systemd" notmeta="1" version="259" release="10.17.or" arch="x86_64" hdrmd5="c40962c58cdf36963c2c0a1e18302327" project="openruyi" repository="x86_64"/>
+  <bdep name="curl" notmeta="1" version="8.20.0" release="8.3.or" arch="x86_64" hdrmd5="0ff7da5c63396939161dc5364f0838c6" project="openruyi" repository="x86_64"/>
+  <bdep name="dbus" notmeta="1" version="1.16.2" release="10.15.or" arch="x86_64" hdrmd5="d1efa93a005b3df894e29bb2b78282e3" project="openruyi" repository="x86_64"/>
+  <bdep name="cryptsetup-libs" notmeta="1" version="2.8.2" release="4.30.or" arch="x86_64" hdrmd5="051a0069e50b0da404004e3d4a27ae5f" project="openruyi" repository="x86_64"/>
+  <bdep name="gnutls" notmeta="1" version="3.8.10" release="4.32.or" arch="x86_64" hdrmd5="ff08ff9df3309596423149af21ba4516" project="openruyi" repository="x86_64"/>
+  <bdep name="nghttp2" notmeta="1" version="1.66.0" release="5.12.or" arch="x86_64" hdrmd5="72c1bce761e38766a05e3d33638593d7" project="openruyi" repository="x86_64"/>
+  <bdep name="nettle" notmeta="1" version="3.10.2" release="3.5.or" arch="x86_64" hdrmd5="4a81537b832716f5cf2a559db6ffeb4b" project="openruyi" repository="x86_64"/>
+  <bdep name="libidn2" notmeta="1" version="2.3.8" release="4.7.or" arch="x86_64" hdrmd5="579369b2ed96da14d3d6a15128bfd556" project="openruyi" repository="x86_64"/>
+  <bdep name="libpsl" notmeta="1" version="0.21.5" release="4.24.or" arch="x86_64" hdrmd5="5f46815b9475598f2f15a5b5ee0b2d4e" project="openruyi" repository="x86_64"/>
+  <bdep name="dbus-common" notmeta="1" version="1.16.2" release="10.15.or" arch="noarch" hdrmd5="dc6c837c513a999582b1dfc811f05341" project="openruyi" repository="x86_64"/>
+  <bdep name="dbus-tools" notmeta="1" version="1.16.2" release="10.15.or" arch="x86_64" hdrmd5="5501f199778c1dbc186d7365bb1ac58b" project="openruyi" repository="x86_64"/>
+  <bdep name="json-c" notmeta="1" version="0.18" release="4.1.or" arch="x86_64" hdrmd5="7c6fb97d3d36fc34a47ae6e72bc57e4d" project="openruyi" repository="x86_64"/>
+  <bdep name="device-mapper-libs" notmeta="1" version="1.02.209" release="3.29.or" arch="x86_64" hdrmd5="cfa7d38bd33a2998a92b028c46cac9a2" project="openruyi" repository="x86_64"/>
+  <bdep name="unbound-libs" notmeta="1" version="1.25.0" release="8.5.or" arch="x86_64" hdrmd5="cd68df9ab5506648bb627c4d759904f0" project="openruyi" repository="x86_64"/>
+  <bdep name="publicsuffix-list" notmeta="1" version="20251008" release="4.3.or" arch="x86_64" hdrmd5="e2d2b7e7c7da7bb127c7e95bafd60493" project="openruyi" repository="x86_64"/>
+  <bdep name="device-mapper" notmeta="1" version="1.02.209" release="3.29.or" arch="x86_64" hdrmd5="a5208d4d02134e897856b866d4d893b1" project="openruyi" repository="x86_64"/>
+  <bdep name="libevent" notmeta="1" version="2.1.12" release="3.12.or" arch="x86_64" hdrmd5="7ce73002ca9a0df0923fcb9e07f0769d" project="openruyi" repository="x86_64"/>
+  <path project="home:Sakura286:ROCm" repository="amd64_build" url="https://repo.build.openruyi.cn/home:/Sakura286:/ROCm/amd64_build/"/>
+  <path project="openruyi" repository="x86_64" url="https://repo.build.openruyi.cn/openruyi/x86_64/"/>
+  <path project="home:nekorouter:rocm" repository="amd64" url="https://repo.build.openruyi.cn/home:/nekorouter:/rocm/amd64/"/>
+  <preinstallimage project="openruyi" repository="x86_64" package="preinstallimage" filename="_preinstallimage.dcb21174917ef3e4926511b12f7c670e" hdrmd5="dcb21174917ef3e4926511b12f7c670e">
+    <binary>acl</binary>
+    <binary>attr</binary>
+    <binary>audit</binary>
+    <binary>authselect</binary>
+    <binary>bash</binary>
+    <binary>binutils</binary>
+    <binary>blake3</binary>
+    <binary>bzip2</binary>
+    <binary>ca-certificates</binary>
+    <binary>ca-certificates-mozilla</binary>
+    <binary>chkconfig</binary>
+    <binary>coreutils</binary>
+    <binary>cpio</binary>
+    <binary>cpp</binary>
+    <binary>cpp15</binary>
+    <binary>cracklib</binary>
+    <binary>cryptsetup-libs</binary>
+    <binary>curl</binary>
+    <binary>dbus</binary>
+    <binary>dbus-common</binary>
+    <binary>dbus-tools</binary>
+    <binary>debugedit</binary>
+    <binary>device-mapper</binary>
+    <binary>device-mapper-libs</binary>
+    <binary>diffutils</binary>
+    <binary>dwz</binary>
+    <binary>elfutils</binary>
+    <binary>envsubst</binary>
+    <binary>expat</binary>
+    <binary>file</binary>
+    <binary>filesystem</binary>
+    <binary>findutils</binary>
+    <binary>gawk</binary>
+    <binary>gcc</binary>
+    <binary>gcc-c++</binary>
+    <binary>gcc15</binary>
+    <binary>gcc15-c++</binary>
+    <binary>gcc15-lib</binary>
+    <binary>gdbm-libs</binary>
+    <binary>gettext-runtime</binary>
+    <binary>gettext-tools</binary>
+    <binary>glibc</binary>
+    <binary>glibc-devel</binary>
+    <binary>glibc-gconv-modules-extra</binary>
+    <binary>glibc-locale-base</binary>
+    <binary>gmp</binary>
+    <binary>gnutls</binary>
+    <binary>grep</binary>
+    <binary>gzip</binary>
+    <binary>isl</binary>
+    <binary>jitterentropy</binary>
+    <binary>json-c</binary>
+    <binary>kbd</binary>
+    <binary>libarchive</binary>
+    <binary>libasan-gcc15</binary>
+    <binary>libatomic-gcc15</binary>
+    <binary>libblkid</binary>
+    <binary>libcap</binary>
+    <binary>libcap-ng</binary>
+    <binary>libdebuginfod-dummy</binary>
+    <binary>libeconf</binary>
+    <binary>libelf</binary>
+    <binary>libevent</binary>
+    <binary>libfdisk</binary>
+    <binary>libffi</binary>
+    <binary>libgcrypt</binary>
+    <binary>libgomp</binary>
+    <binary>libgomp-gcc15</binary>
+    <binary>libgpg-error</binary>
+    <binary>libhwasan-gcc15</binary>
+    <binary>libidn2</binary>
+    <binary>libitm-gcc15</binary>
+    <binary>liblastlog2</binary>
+    <binary>liblsan-gcc15</binary>
+    <binary>libmount</binary>
+    <binary>libpkgconf7</binary>
+    <binary>libpng</binary>
+    <binary>libpsl</binary>
+    <binary>libpwquality</binary>
+    <binary>libselinux</binary>
+    <binary>libsepol</binary>
+    <binary>libsmartcols</binary>
+    <binary>libstdc++-devel-gcc15</binary>
+    <binary>libstdc++-gcc15</binary>
+    <binary>libtasn1</binary>
+    <binary>libtsan-gcc15</binary>
+    <binary>libubsan-gcc15</binary>
+    <binary>libunistring</binary>
+    <binary>libuuid</binary>
+    <binary>libxcrypt</binary>
+    <binary>libxcrypt-devel</binary>
+    <binary>libxml2</binary>
+    <binary>linux-headers</binary>
+    <binary>lua</binary>
+    <binary>lz4</binary>
+    <binary>m4</binary>
+    <binary>make</binary>
+    <binary>mimalloc</binary>
+    <binary>mold</binary>
+    <binary>mpc</binary>
+    <binary>mpdecimal</binary>
+    <binary>mpfr</binary>
+    <binary>ncurses</binary>
+    <binary>nettle</binary>
+    <binary>newt</binary>
+    <binary>nghttp2</binary>
+    <binary>openruyi-authselect-profiles</binary>
+    <binary>openruyi-release</binary>
+    <binary>openssl</binary>
+    <binary>p11-kit</binary>
+    <binary>pam</binary>
+    <binary>patch</binary>
+    <binary>pcre2</binary>
+    <binary>perl</binary>
+    <binary>perl-rpm-packaging</binary>
+    <binary>pkgconf</binary>
+    <binary>pkgconf-m4</binary>
+    <binary>pkgconf-pkg-config</binary>
+    <binary>popt</binary>
+    <binary>publicsuffix-list</binary>
+    <binary>python-pip-wheel</binary>
+    <binary>python3-libs</binary>
+    <binary>readline</binary>
+    <binary>rpm</binary>
+    <binary>rpm-build</binary>
+    <binary>rpm-config-openruyi</binary>
+    <binary>sed</binary>
+    <binary>setup</binary>
+    <binary>slang</binary>
+    <binary>sqlite</binary>
+    <binary>systemd</binary>
+    <binary>systemd-libs</binary>
+    <binary>systemd-pam</binary>
+    <binary>systemd-rpm-macros</binary>
+    <binary>systemd-shared</binary>
+    <binary>systemd-sysusers</binary>
+    <binary>systemd-udev</binary>
+    <binary>tar</binary>
+    <binary>tbb</binary>
+    <binary>tzdata</binary>
+    <binary>unbound-libs</binary>
+    <binary>util-linux</binary>
+    <binary>which</binary>
+    <binary>xz</binary>
+    <binary>zlib-ng-compat</binary>
+    <binary>zstd</binary>
+    <url>https://repo.build.openruyi.cn/openruyi/x86_64/</url>
+  </preinstallimage>
+</buildinfo>
