@@ -81,8 +81,10 @@ rewrite. For a spec written clean from the start, a single well-formed
 
 ## Step 5 — Trigger the OBS build
 
-If the OBS package **already exists**, the push in Step 4 already triggered a
-rebuild — you're done (don't poll; see SKILL.md). If it **doesn't exist yet**,
+If the OBS package **already exists**, run
+`osc … service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>` after the push (a
+push alone does not rebuild — see SKILL.md) and you're done (don't poll). If it
+**doesn't exist yet**,
 create it (details and the `_service` template in `reference/obs.md`):
 
 ```bash

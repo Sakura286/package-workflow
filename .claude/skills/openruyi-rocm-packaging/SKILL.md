@@ -163,9 +163,22 @@ wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https:
 (`git` works fine directly via `git -C //wsl.localhost/...` — only `osc` needs the
 WSL bridge.) Inside the OBS checkout the apiurl is cached, so plain `osc` works there.
 
-**Trigger a rebuild** of an existing package: the `_service` pulls from git, so
-**pushing to `rocm-specs` is enough** to start a rebuild. To force one:
-`osc -A <api> service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>`.
+**Trigger a rebuild** of an existing package: the `_service` pulls from git, but
+this OBS has **no git webhook — pushing to `rocm-specs` does not start anything
+by itself** (verified 2026-06: two pushes, zero service runs). After every push,
+kick the service remotely:
+
+```bash
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>'
+```
+
+To confirm it picked up the push, list the expanded sources — the
+`rocm-specs-<stamp>.<commit>.obscpio` entry must show the new commit (the
+service takes ~1-2 min; the rebuild then schedules automatically):
+
+```bash
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_PyTorch_Submit/<pkg>?expand=1"'
+```
 
 **Create a new OBS package** (only when it doesn't exist yet): see
 `workflows/new-package.md` / `reference/obs.md` (`osc mkpac` + `_service` + `osc ci`).
@@ -177,7 +190,8 @@ number `<NN>`:
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 ```
 
-**Stop after triggering — do not poll.** Once `osc ci` / the push is clean, the
+**Stop after triggering — do not poll.** Once `osc ci` / `service rr` went through
+cleanly (and, after a push, the expanded sources show the new commit), the
 build can take hours; the user reviews it and hands back a log file (or asks you to
 fetch the latest) when another iteration is needed. Don't sit in a status-polling
 loop. (This supersedes the old polling loop described in `.agent.md`.)

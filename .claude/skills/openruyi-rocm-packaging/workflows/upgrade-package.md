@@ -73,6 +73,7 @@ git -C rocm-specs commit -m "<pkg>: update to <version>"
 git -C rocm-specs push
 ```
 
-The push triggers the rebuild via the OBS `_service`. **Stop there — don't poll**
-(see SKILL.md). If a patch or option fix is needed afterward, that's a separate
-fix-build pass (→ `workflows/fix-build.md`).
+A push alone does not trigger the rebuild — after pushing, run
+`osc … service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>` (see SKILL.md).
+**Then stop — don't poll.** If a patch or option fix is needed afterward, that's
+a separate fix-build pass (→ `workflows/fix-build.md`).

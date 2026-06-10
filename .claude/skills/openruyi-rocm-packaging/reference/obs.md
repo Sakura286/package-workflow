@@ -39,8 +39,9 @@ where `<NN>` is one past the latest existing log for that package:
 osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64
 ```
 
-**Trigger a rebuild.** Pushing to `rocm-specs` already rebuilds (the `_service`
-pulls from git). To force one explicitly:
+**Trigger a rebuild.** Pushing to `rocm-specs` does **not** rebuild by itself —
+there is no git→OBS webhook, and `obs_scm` never polls the remote repo. Always
+run the service after a push (the source change then schedules the build):
 
 ```bash
 osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>

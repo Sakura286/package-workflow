@@ -85,6 +85,12 @@ git -C rocm-specs commit -m "<pkg>: fix <issue>"   # add -m "<url>" body if citi
 git -C rocm-specs push
 ```
 
-The push triggers the rebuild via the OBS `_service` (or force it with
-`osc … service rr`). **Then stop — do not poll the build.** The user watches it and
+A push alone does **not** trigger anything — there is no git→OBS webhook. After
+the push, run the service and let the rebuild schedule itself:
+
+```bash
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>'
+```
+
+**Then stop — do not poll the build.** The user watches it and
 returns the next log if another iteration is needed (loop back to Step 1).
