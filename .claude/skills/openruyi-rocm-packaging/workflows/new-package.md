@@ -71,7 +71,7 @@ fresh) to satisfy every rule in `reference/declarative-build.md`. The essentials
 ```bash
 git -C rocm-specs add SPECS/<pkg>
 git -C rocm-specs commit -m "<pkg>: init"
-git -C rocm-specs push
+git -C rocm-specs push github main
 ```
 
 If you want to mirror the historical two-step (import, then reformat), make the
@@ -81,11 +81,11 @@ rewrite. For a spec written clean from the start, a single well-formed
 
 ## Step 5 — Trigger the OBS build
 
-If the OBS package **already exists**, run
-`osc … service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>` after the push (a
-push alone does not rebuild — see SKILL.md) and you're done (don't poll). If it
-**doesn't exist yet**,
-create it (details and the `_service` template in `reference/obs.md`):
+If the OBS package **already exists**, the push in Step 4 already triggered the
+rebuild via the repo's GitHub Actions workflow — you're done (don't poll; see
+SKILL.md). If it **doesn't exist yet**, that push's Actions run fails with a 404
+for the new package (expected: OBS has nothing to trigger yet — ignore it);
+create the package (details and the `_service` template in `reference/obs.md`):
 
 ```bash
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_PyTorch_Submit \

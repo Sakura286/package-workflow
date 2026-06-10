@@ -39,13 +39,24 @@ where `<NN>` is one past the latest existing log for that package:
 osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64
 ```
 
-**Trigger a rebuild.** Pushing to `rocm-specs` does **not** rebuild by itself —
-there is no git→OBS webhook, and `obs_scm` never polls the remote repo. Always
-run the service after a push (the source change then schedules the build):
+**Trigger a rebuild.** `obs_scm` never polls the remote repo and this OBS has no
+webhook; a trigger happens one of three ways:
+
+1. **Automatic (the normal path):** `git push github main` on `rocm-specs`. The
+   repo's GitHub Actions workflow (`.github/workflows/trigger-obs.yml`) diffs the
+   push and, for every changed `SPECS/<pkg>/`, POSTs the OBS trigger API:
+   `POST https://pickaxe.oerv.ac.cn/trigger/runservice?project=…&package=…` with
+   header `Authorization: Token <secret>`. The secret is a global runservice
+   token (`osc token --create --operation runservice`) stored as the GitHub repo
+   secret `OBS_TRIGGER_TOKEN`.
+2. **Manual workflow re-run:** GitHub → Actions → "Trigger OBS services" → Run
+   workflow with `package=<pkg>` (useful after a 404 for a freshly created
+   package, or when a run failed).
+3. **Manual via osc:**
 
 ```bash
 osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>
-# fallback:
+# rebuild without re-running services:
 osc -A https://pickaxe.oerv.ac.cn rebuildpac home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64
 ```
 
@@ -72,7 +83,7 @@ osc ci -m "<pkg>: init"
 <services>
   <service name="obs_scm">
     <param name="scm">git</param>
-    <param name="url">ssh://git@git.openruyi.cn:54865/Sakura286/rocm-specs.git</param>
+    <param name="url">https://github.com/Sakura286/rocm-specs</param>
     <param name="revision">main</param>
     <param name="exclude">*</param>
     <param name="extract">SPECS/<pkg>/*</param>

@@ -70,10 +70,10 @@ A new version may change what gets installed or how it builds. Check for:
 ```bash
 git -C rocm-specs add SPECS/<pkg>
 git -C rocm-specs commit -m "<pkg>: update to <version>"
-git -C rocm-specs push
+git -C rocm-specs push github main
 ```
 
-A push alone does not trigger the rebuild — after pushing, run
-`osc … service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>` (see SKILL.md).
+The push to the GitHub remote triggers the rebuild automatically via the repo's
+Actions workflow (see SKILL.md; `osc … service rr` remains the manual fallback).
 **Then stop — don't poll.** If a patch or option fix is needed afterward, that's
 a separate fix-build pass (→ `workflows/fix-build.md`).

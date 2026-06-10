@@ -41,7 +41,7 @@ Paths are relative to the workspace root (`package-workflow/`).
 
 | Path | What it is |
 |---|---|
-| `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo. Full write access — commit and push freely.** Remote `ssh://git@git.openruyi.cn:54865/Sakura286/rocm-specs.git`, branch `main`. |
+| `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo. Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. **The local remote is named `github`** — push with `git push github main`; `origin` still points at the retired Gitea instance and pushing there does nothing. |
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
 | `orig_code/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). |
 | `openRuyi/SPECS/` | The rest of the distro's specs. Reference for format and for how a dependency is packaged. |
@@ -163,16 +163,23 @@ wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https:
 (`git` works fine directly via `git -C //wsl.localhost/...` — only `osc` needs the
 WSL bridge.) Inside the OBS checkout the apiurl is cached, so plain `osc` works there.
 
-**Trigger a rebuild** of an existing package: the `_service` pulls from git, but
-this OBS has **no git webhook — pushing to `rocm-specs` does not start anything
-by itself** (verified 2026-06: two pushes, zero service runs). After every push,
-kick the service remotely:
+**Trigger a rebuild** of an existing package: **push to the GitHub remote and the
+rest is automatic** — a GitHub Actions workflow in `rocm-specs`
+(`.github/workflows/trigger-obs.yml`) diffs every push to `main` and calls the OBS
+trigger API (`POST /trigger/runservice`, global token stored as the repo secret
+`OBS_TRIGGER_TOKEN`) for each package whose `SPECS/<pkg>/` changed. Mind the
+remote name: **`git push github main`** — `origin` is the retired Gitea and OBS
+never sees pushes there. (`obs_scm` never polls git and this OBS has no webhook;
+the Actions workflow is the only automatic path. Details: `reference/obs.md`.)
+
+Manual fallback (Actions run failed, or re-trigger without a push) — either
+GitHub → Actions → "Trigger OBS services" → Run workflow with `package=<pkg>`, or:
 
 ```bash
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>'
 ```
 
-To confirm it picked up the push, list the expanded sources — the
+To confirm a trigger landed, list the expanded sources — the
 `rocm-specs-<stamp>.<commit>.obscpio` entry must show the new commit (the
 service takes ~1-2 min; the rebuild then schedules automatically):
 
@@ -190,8 +197,9 @@ number `<NN>`:
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 ```
 
-**Stop after triggering — do not poll.** Once `osc ci` / `service rr` went through
-cleanly (and, after a push, the expanded sources show the new commit), the
+**Stop after triggering — do not poll.** Once `osc ci` or `git push github main`
+went through cleanly (the Actions workflow does the triggering; optionally confirm
+the expanded sources picked up the new commit), the
 build can take hours; the user reviews it and hands back a log file (or asks you to
 fetch the latest) when another iteration is needed. Don't sit in a status-polling
 loop. (This supersedes the old polling loop described in `.agent.md`.)

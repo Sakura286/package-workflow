@@ -82,15 +82,13 @@ source to credit:
 ```bash
 git -C rocm-specs add SPECS/<pkg>
 git -C rocm-specs commit -m "<pkg>: fix <issue>"   # add -m "<url>" body if citing upstream
-git -C rocm-specs push
+git -C rocm-specs push github main
 ```
 
-A push alone does **not** trigger anything — there is no git→OBS webhook. After
-the push, run the service and let the rebuild schedule itself:
-
-```bash
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>'
-```
+The push to the GitHub remote is all it takes: the repo's Actions workflow
+triggers the OBS service for exactly the packages whose `SPECS/<pkg>/` changed
+(`origin` is the retired Gitea — pushing there does nothing). If the Actions run
+failed, fall back to a manual `osc … service rr` (see SKILL.md).
 
 **Then stop — do not poll the build.** The user watches it and
 returns the next log if another iteration is needed (loop back to Step 1).
