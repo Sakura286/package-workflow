@@ -3,5 +3,12 @@ vllm-specs/
 rocm-specs/
 log/
 orig_code/
-.claude
 homepage
+home:Sakura286*
+tmp/
+openRuyi-rocm-7.2/
+rpms/
+
+# Track .claude/skills, but not transient session worktrees or local settings
+.claude/worktrees/
+.claude/settings.local.json
