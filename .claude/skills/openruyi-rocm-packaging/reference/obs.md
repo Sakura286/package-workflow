@@ -60,6 +60,56 @@ osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit 
 osc -A https://pickaxe.oerv.ac.cn rebuildpac home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64
 ```
 
+## Watching a build round: `scripts/watch-obs.sh`
+
+`scripts/watch-obs.sh <pkg> [pkg...]` (bash, runs inside WSL) waits for the
+pushed commit to be picked up by the OBS service, then polls `osc results`
+until every repo/arch of every named package reaches a final state. One stdout
+line per event — run it under the **Monitor tool** with `persistent: true` so
+each event wakes the agent and the watch survives multi-hour builds:
+
+```
+wsl.exe -d ubuntu-26.04 -- bash -lc '~/Repo/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
+```
+
+Events:
+
+```
+TRIGGERED <pkg> <hash>              service picked up the pushed commit
+TRIGGER-TIMEOUT <pkg> …             commit never appeared — Actions run lost;
+                                    fall back to `osc service rr`, restart watcher
+RESULT <pkg> <repo>/<arch> <code>   one build row reached a final state
+WARN …                              repeated API failures (watch continues)
+DONE <n> failed / <m> rows final    all rows final; watcher exits
+```
+
+Final codes: `succeeded | failed | unresolvable | broken | excluded | disabled`.
+Exit 0 when nothing failed, 1 otherwise.
+
+Env knobs: `POLL` (status poll seconds, default 60), `TRIGGER_TIMEOUT`
+(default 900), `EXPECT_COMMIT` (default: current rocm-specs HEAD),
+`SKIP_TRIGGER_CHECK=1` (watch the current round as-is — ad-hoc status watching,
+or after a manual `service rr` of an old commit).
+
+Notes:
+
+- A `RESULT` only fires after **two consecutive clean (`dirty=False`) final
+  reads**, so the stale pre-rebuild status right after a service run can't end
+  the watch early.
+- After pushing a fix mid-round, **TaskStop the old watcher and arm a fresh
+  one** — its row state belongs to the previous round.
+- A package is watched on *all* repos it builds for (amd64_build and, where
+  enabled, riscv64_build); `blocked` (waiting on deps) counts as in-progress.
+
+### Quoting trap: `$` dies on the wsl.exe command line
+
+Git Bash rewrites `'…'` as `"…"` when building the Windows command line, and
+wsl.exe hands that line to the WSL login shell to parse — so `$?`, `$$`, and
+`$vars` are expanded by the *outer* WSL shell before the inner command runs
+(`…; echo $?` always prints 0). Keep wsl.exe one-liners free of `$`; logic that
+needs variables belongs in a script stored inside WSL (like watch-obs.sh).
+Plain literal commands — everything else in this file — are unaffected.
+
 ## Creating a new OBS package
 
 Only when the package isn't in the project yet. From the local checkout:
@@ -75,7 +125,9 @@ osc ci -m "<pkg>: init"
 ```
 
 `osc ci` uploads `_service`, and OBS runs it to pull the spec from git and build.
-**After a clean `ci`, stop** — don't poll the build (see SKILL.md).
+After a clean `ci`, arm the watcher (see above) instead of polling — the `ci`
+itself ran the service, so use `SKIP_TRIGGER_CHECK=1` if the spec commit was
+already on `main` before the package existed on OBS.
 
 ### `_service` template (current form, with `exclude`)
 

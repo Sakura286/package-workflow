@@ -181,7 +181,8 @@ wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https:
 
 To confirm a trigger landed, list the expanded sources — the
 `rocm-specs-<stamp>.<commit>.obscpio` entry must show the new commit (the
-service takes ~1-2 min; the rebuild then schedules automatically):
+service takes ~1-2 min; the rebuild then schedules automatically). The watcher
+script below performs this check automatically; the manual form is:
 
 ```bash
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_PyTorch_Submit/<pkg>?expand=1"'
@@ -197,9 +198,41 @@ number `<NN>`:
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 ```
 
-**Stop after triggering — do not poll.** Once `osc ci` or `git push github main`
-went through cleanly (the Actions workflow does the triggering; optionally confirm
-the expanded sources picked up the new commit), the
-build can take hours; the user reviews it and hands back a log file (or asks you to
-fetch the latest) when another iteration is needed. Don't sit in a status-polling
-loop. (This supersedes the old polling loop described in `.agent.md`.)
+**After triggering — arm the watcher, never poll in the foreground.** Builds
+take minutes to hours, so don't sit in a status loop. Instead, once the push (or
+`osc ci`) went through, start `scripts/watch-obs.sh` under the **Monitor tool**
+with `persistent: true` (builds outlive any timeout), naming the package(s) just
+pushed:
+
+```
+wsl.exe -d ubuntu-26.04 -- bash -lc '~/Repo/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
+```
+
+The script first confirms the trigger landed (expanded sources pick up the new
+commit), then polls every repo/arch to a final state. Each stdout line is an
+event that wakes you (full reference: `reference/obs.md`):
+
+| Event | React |
+|---|---|
+| `TRIGGERED <pkg> <hash>` | nothing — trigger confirmed |
+| `TRIGGER-TIMEOUT <pkg> …` | Actions run lost: manual `osc service rr`, then restart the watcher |
+| `RESULT <pkg> <repo>/<arch> failed/unresolvable/broken` | fetch the log, run `workflows/fix-build.md` |
+| `RESULT … succeeded` | nothing |
+| `DONE <n> failed / <m> rows final` | report the round's outcome to the user |
+
+**The autonomous fix loop:** on a failure event, fetch the log to
+`log/<pkg>-<NN>.log`, diagnose and fix per `workflows/fix-build.md`, commit and
+push — then **TaskStop the old watcher and arm a fresh one** for the package(s)
+re-pushed (the old watcher's state belongs to the previous round). Repeat until
+green. Send a PushNotification when the round goes all-green, and **stop looping
+and ask the user** instead when:
+
+- the same package fails twice with the same root error, or ~3 fix attempts
+  haven't moved it;
+- the fix needs a judgment call that isn't yours (version pins, disabling
+  features/tests beyond the repo's precedent, anything near `llvm-21`);
+- the failure is infrastructure (OBS/worker trouble), not the package.
+
+The watcher lives only as long as the Claude Code session — if the user is
+about to close it mid-build, say so. The user may still hand back a saved log
+manually at any time; that path keeps working regardless of the watcher.

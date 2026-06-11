@@ -90,5 +90,25 @@ triggers the OBS service for exactly the packages whose `SPECS/<pkg>/` changed
 (`origin` is the retired Gitea — pushing there does nothing). If the Actions run
 failed, fall back to a manual `osc … service rr` (see SKILL.md).
 
-**Then stop — do not poll the build.** The user watches it and
-returns the next log if another iteration is needed (loop back to Step 1).
+## Step 6 — Arm the watcher and loop
+
+Don't poll in the foreground; arm the build watcher (Monitor tool,
+`persistent: true`) and let its events call you back:
+
+```
+wsl.exe -d ubuntu-26.04 -- bash -lc '~/Repo/package-workflow/scripts/watch-obs.sh <pkg>'
+```
+
+- `RESULT <pkg> … failed/unresolvable/broken` → loop back to Step 1: fetch the
+  fresh log yourself, fix, push — then TaskStop the old watcher and arm a new one.
+- `RESULT … succeeded` on every arch / `DONE 0 failed` → report success
+  (PushNotification if the user is likely away).
+- `TRIGGER-TIMEOUT` → the Actions run was lost: trigger manually
+  (`osc service rr`, see SKILL.md), restart the watcher.
+
+**Know when to stop looping.** Hand back to the user instead of pushing another
+attempt when the same root error survives a fix, when ~3 attempts haven't moved
+the package, when the fix requires a judgment call (version pins, disabling
+tests/features beyond repo precedent, anything near `llvm-21`), or when the
+failure is OBS infrastructure rather than the package. A log handed over by the
+user mid-round always takes priority over watcher events.
