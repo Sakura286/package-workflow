@@ -8,10 +8,19 @@ description: >-
   Also use it for any related step — writing or reformatting a .spec under
   rocm-specs/SPECS, converting a Fedora spec to openRuyi's declarative style,
   refreshing a Source/sha256/#!RemoteAsset, rebasing patches, committing spec
-  changes as CHEN Xuan, or triggering/fetching builds on OBS (osc, project
-  home:Sakura286:ROCm_PyTorch_Submit). Trigger even when the user only names a
-  package and an action ("打 half 这个包", "升级 rccl 到 7.2", "修一下 hipblaslt 的构建"),
-  or pastes a build error from the ROCm stack, without mentioning "spec" or "OBS".
+  changes as CHEN Xuan, or triggering/fetching builds on OBS (osc, projects
+  home:Sakura286:ROCm_PyTorch_Submit for mainline or home:Sakura286:ROCm_724 for
+  ROCm 7.2.4 testing). Trigger even when the user only names a package and an
+  action ("打 half 这个包", "升级 rccl 到 7.2", "修一下 hipblaslt 的构建"), or pastes a build
+  error from the ROCm stack, without mentioning "spec" or "OBS".
+---
+
+## Language convention
+
+- Think and reason in English.
+- Reply to the user in Chinese.
+- Technical terms and code stay in English — do not translate them.
+
 ---
 
 # openRuyi ROCm Packaging
@@ -21,17 +30,42 @@ RPM distribution. openRuyi uses **RPM 4.20+ declarative builds**. The
 authoritative packaging guide lives in this workspace at
 `homepage/docs/packaging-guidelines/` — consult it when a rule here is unclear.
 
+## First: detect your runtime — inside WSL vs Windows host
+
+This workspace is on the WSL filesystem, but you may be driven from **either** inside
+WSL or from the Windows host, and the command form differs. **Detect before running
+anything** (run this in your Bash/sh tool):
+
+```bash
+grep -qi microsoft /proc/version 2>/dev/null && echo INSIDE-WSL || echo WINDOWS-HOST
+```
+
+- **INSIDE-WSL** — `WSL_DISTRO_NAME=Ubuntu-26.04`, `osc`/`git` are on PATH. Run every
+  command **directly** from `~/Repo/package-workflow`; `$` works normally.
+- **WINDOWS-HOST** — your shells are PowerShell + Git-Bash, `osc` is not on PATH, the repo
+  is at `\\wsl.localhost\ubuntu-26.04\…`. Wrap every osc/git command through WSL:
+  `wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && <CMD>'`, and keep `$`
+  out of the one-liner (it gets eaten — put variable logic in a WSL script). If your only
+  shell is PowerShell, you're on the Windows host.
+
+**All command examples in this skill use the WINDOWS-HOST (wrapped) form.** If you detected
+INSIDE-WSL, strip the `wsl.exe … bash -lc '…'` wrapper and run the inner command directly.
+
 ## Pick the workflow
 
 | The user wants to… | Read |
 |---|---|
-| Add a brand-new package to `rocm-specs` | `workflows/new-package.md` |
+| Add a brand-new package to `rocm-specs` or `rocm-specs-7.2` | `workflows/new-package.md` |
 | Bump an existing package to a new version | `workflows/upgrade-package.md` |
 | Fix a failing build from the latest log | `workflows/fix-build.md` |
 
-All three end the same way: commit to `rocm-specs` and trigger the OBS build.
+All three end the same way: commit to the spec repo and trigger the OBS build.
 The conventions below apply to every workflow — read them first, then open the
 workflow file. For depth, the workflow files point into `reference/`.
+
+**Which repo/project to use:**
+- **Mainline** (`rocm-specs/main` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2/7.2.4` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
 ---
 
@@ -41,12 +75,14 @@ Paths are relative to the workspace root (`package-workflow/`).
 
 | Path | What it is |
 |---|---|
-| `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo. Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. **The local remote is named `github`** — push with `git push github main`; `origin` still points at the retired Gitea instance and pushing there does nothing. |
+| `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo (mainline). Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. **The local remote is named `github`** — push with `git push github main`; `origin` still points at the retired Gitea instance and pushing there does nothing. |
+| `rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec` | **ROCm 7.2.4 testing spec repo.** Cloned from the same GitHub repo, branch `7.2.4`. Remote `origin` points to `git@github.com:Sakura286/rocm-specs.git`. Push with `git push origin 7.2.4`. |
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
 | `orig_code/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). |
 | `openRuyi/SPECS/` | The rest of the distro's specs. Reference for format and for how a dependency is packaged. |
 | `log/<pkg>-<NN>.log` | Build logs, manually sequence-numbered. Sometimes an arch/status suffix (`amdsmi-04-riscv64.log`, `python-torch-02-success.log`). |
-| `home:Sakura286:ROCm_PyTorch_Submit/` | OBS local checkout (one subdir per OBS package, each with a `_service`). |
+| `home:Sakura286:ROCm_PyTorch_Submit/` | OBS local checkout for mainline (one subdir per OBS package, each with a `_service`). |
+| `home:Sakura286:ROCm_724/` | OBS local checkout for ROCm 7.2.4 testing (one subdir per OBS package, each with a `_service`). |
 | `homepage/docs/packaging-guidelines/` | The openRuyi packaging guide (authoritative). |
 
 ### Matching a package to its source in `orig_code/`
@@ -74,11 +110,11 @@ tarball and extract).
 The `rocm-specs` and `openRuyi` repos are configured to commit as
 **`CHEN Xuan <chenxuan@iscas.ac.cn>`** (set once via `git config user.name/email`).
 Never commit as Claude or any other identity. If you ever clone a fresh repo to
-commit into, set this identity first:
+commit into, set this identity first (via WSL):
 
 ```bash
-git -C <repo> config user.name  "CHEN Xuan"
-git -C <repo> config user.email "chenxuan@iscas.ac.cn"
+wsl.exe -d ubuntu-26.04 -- bash -lc 'git -C ~/Repo/package-workflow/<repo> config user.name  "CHEN Xuan"'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'git -C ~/Repo/package-workflow/<repo> config user.email "chenxuan@iscas.ac.cn"'
 ```
 
 Commit messages mimic the existing history — **one line, `<package>: <short desc>`**,
@@ -149,34 +185,51 @@ A compact, real example is `rocm-specs/SPECS/rccl/rccl.spec` (cmake);
 
 ## OBS: trigger builds and fetch logs
 
-Project `home:Sakura286:ROCm_PyTorch_Submit`, repo `amd64_build`, arch `x86_64`
-(some packages also build `riscv64`). API `https://pickaxe.oerv.ac.cn`.
+Two OBS projects are used:
+
+| Project | Purpose | Repo/Branch |
+|---|---|---|
+| `home:Sakura286:ROCm_PyTorch_Submit` | Mainline ROCm packages (production) | `rocm-specs/main` |
+| `home:Sakura286:ROCm_724` | ROCm 7.2.4 testing | `rocm-specs-7.2/7.2.4` |
+
+Both use repo `amd64_build`, arch `x86_64` (some packages also build `riscv64`).
+API: `https://pickaxe.oerv.ac.cn`.
 Full command reference and the `_service` template: `reference/obs.md`.
 
-**Running osc from this machine:** the Bash tool here is Git Bash; `osc` is only in
-WSL. Wrap every osc call:
+**Running osc — WINDOWS-HOST form below; strip the wrapper if you detected INSIDE-WSL**
+(see "First: detect your runtime" above):
 
 ```bash
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
 ```
 
-(`git` works fine directly via `git -C //wsl.localhost/...` — only `osc` needs the
-WSL bridge.) Inside the OBS checkout the apiurl is cached, so plain `osc` works there.
+On the Windows host neither `osc` nor `git` is on PATH, so both go through this WSL bridge
+(plain Windows-side `git -C //wsl.localhost/...` also hits "dubious ownership"). Inside the
+OBS checkout the apiurl is cached in `.osc/`, so plain `osc <cmd>` works without `-A`.
 
 **Trigger a rebuild** of an existing package: **push to the GitHub remote and the
-rest is automatic** — a GitHub Actions workflow in `rocm-specs`
-(`.github/workflows/trigger-obs.yml`) diffs every push to `main` and calls the OBS
+rest is automatic** — a GitHub Actions workflow in each repo
+(`.github/workflows/trigger-obs.yml`) diffs every push and calls the OBS
 trigger API (`POST /trigger/runservice`, global token stored as the repo secret
-`OBS_TRIGGER_TOKEN`) for each package whose `SPECS/<pkg>/` changed. Mind the
-remote name: **`git push github main`** — `origin` is the retired Gitea and OBS
-never sees pushes there. (`obs_scm` never polls git and this OBS has no webhook;
+`OBS_TRIGGER_TOKEN`) for each package whose `SPECS/<pkg>/` changed.
+
+- **Mainline** (`rocm-specs`): push with `git push github main` (via WSL) —
+  triggers `home:Sakura286:ROCm_PyTorch_Submit`. `origin` is the retired Gitea
+  and OBS never sees pushes there.
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2`): push with `git push origin 7.2.4`
+  (via WSL) — triggers `home:Sakura286:ROCm_724`.
+
+(`obs_scm` never polls git and this OBS has no webhook;
 the Actions workflow is the only automatic path. Details: `reference/obs.md`.)
 
 Manual fallback (Actions run failed, or re-trigger without a push) — either
 GitHub → Actions → "Trigger OBS services" → Run workflow with `package=<pkg>`, or:
 
 ```bash
+# Mainline
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>'
+# ROCm 7.2.4 testing
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_724 <pkg>'
 ```
 
 To confirm a trigger landed, list the expanded sources — the
@@ -185,7 +238,10 @@ service takes ~1-2 min; the rebuild then schedules automatically). The watcher
 script below performs this check automatically; the manual form is:
 
 ```bash
+# Mainline
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_PyTorch_Submit/<pkg>?expand=1"'
+# ROCm 7.2.4 testing
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_724/<pkg>?expand=1"'
 ```
 
 **Create a new OBS package** (only when it doesn't exist yet): see
@@ -195,7 +251,10 @@ wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https:
 number `<NN>`:
 
 ```bash
+# Mainline
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
+# ROCm 7.2.4 testing
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 ```
 
 **After triggering — arm the watcher, never poll in the foreground.** Builds

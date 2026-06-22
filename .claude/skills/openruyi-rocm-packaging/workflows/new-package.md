@@ -1,7 +1,11 @@
 # Workflow: Add a new package
 
-Goal: create `rocm-specs/SPECS/<pkg>/<pkg>.spec` for a package that doesn't exist
-yet, in openRuyi declarative style, then commit and trigger its OBS build.
+Goal: create a spec file for a package that doesn't exist yet, in openRuyi
+declarative style, then commit and trigger its OBS build.
+
+**Which repo/project to use:**
+- **Mainline** (`rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
 Inputs from the user: the package name; sometimes a source URL. Ask only if the
 name is ambiguous or no source can be found.
@@ -13,10 +17,9 @@ name is ambiguous or no source can be found.
 ## Step 1 — Get a reference spec (Fedora rawhide first)
 
 Fedora is the starting point. Clone its spec into `rpms/` (reference only — keep
-its `.git`, never commit it into `rocm-specs`):
+its `.git`, never commit it into `rocm-specs` or `rocm-specs-7.2`):
 
 ```bash
-cd rpms
 git clone https://src.fedoraproject.org/rpms/<pkg>.git
 ```
 
@@ -30,12 +33,12 @@ git clone https://src.fedoraproject.org/rpms/<pkg>.git
 
   If a draft exists, use it as the base (drop its `.git`; don't commit it as-is).
 - If neither source has it, write from scratch: use the information the user
-  provides plus a sibling spec in `rocm-specs` as the format template. Good
-  templates: `rccl`, `rocrand`, `hipsparse` (cmake); `python-triton` (pyproject
-  with a bundled build).
+  provides plus a sibling spec in `rocm-specs` (or `rocm-specs-7.2`) as the format
+  template. Good templates: `rccl`, `rocrand`, `hipsparse` (cmake); `python-triton`
+  (pyproject with a bundled build).
 
 Also look at how `rocm-specs` already handles related packages and at this
-package's history if it ever existed: `git -C rocm-specs log --oneline -- SPECS/<pkg>`.
+package's history if it ever existed: `wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs log --oneline -- SPECS/<pkg>'`.
 
 ## Step 2 — Get the source
 
@@ -49,8 +52,8 @@ options the project **actually** uses — you'll prune the spec down to those.
 
 ## Step 3 — Write the openRuyi spec
 
-Create `rocm-specs/SPECS/<pkg>/<pkg>.spec` by adapting the Fedora spec (or writing
-fresh) to satisfy every rule in `reference/declarative-build.md`. The essentials:
+Create the spec file by adapting the Fedora spec (or writing fresh) to satisfy
+every rule in `reference/declarative-build.md`. The essentials:
 
 1. SPDX header — add the CHEN-Xuan-only block if the base spec has none; otherwise
    preserve the existing header.
@@ -66,12 +69,17 @@ fresh) to satisfy every rule in `reference/declarative-build.md`. The essentials
    use `%autorelease` and `%autochangelog`.
 7. Prune cmake options to those present in the upstream `CMakeLists.txt`.
 
+**Where to create the spec:**
+- **Mainline**: `rocm-specs/SPECS/<pkg>/<pkg>.spec`
+- **ROCm 7.2.4 testing**: `rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec`
+
 ## Step 4 — Commit
 
 ```bash
-git -C rocm-specs add SPECS/<pkg>
-git -C rocm-specs commit -m "<pkg>: init"
-git -C rocm-specs push github main
+# Mainline
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: init" && git -C rocm-specs push github main'
+# ROCm 7.2.4 testing
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 add SPECS/<pkg> && git -C rocm-specs-7.2 commit -m "<pkg>: init" && git -C rocm-specs-7.2 push origin 7.2.4'
 ```
 
 If you want to mirror the historical two-step (import, then reformat), make the
@@ -88,11 +96,20 @@ for the new package (expected: OBS has nothing to trigger yet — ignore it);
 create the package (details and the `_service` template in `reference/obs.md`):
 
 ```bash
+# Mainline
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_PyTorch_Submit \
   && osc mkpac <pkg> \
   && cp python-torch/_service <pkg>/_service'
 # edit <pkg>/_service: change the extract path to SPECS/<pkg>/*
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_PyTorch_Submit/<pkg> \
+  && osc add _service && osc ci -m "<pkg>: init"'
+
+# ROCm 7.2.4 testing
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_724 \
+  && osc mkpac <pkg> \
+  && cp ../home:Sakura286:ROCm_PyTorch_Submit/python-torch/_service <pkg>/_service'
+# edit <pkg>/_service: change the extract path to SPECS/<pkg>/* AND revision to 7.2.4
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_724/<pkg> \
   && osc add _service && osc ci -m "<pkg>: init"'
 ```
 

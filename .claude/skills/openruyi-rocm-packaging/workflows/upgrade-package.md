@@ -1,7 +1,11 @@
 # Workflow: Upgrade a package to a new version
 
-Goal: bump an existing `rocm-specs` package to a target version, refresh its
+Goal: bump an existing package to a target version, refresh its
 source/checksum and patches, commit, and trigger the rebuild.
+
+**Which repo/project to use:**
+- **Mainline** (`rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
 Inputs from the user: package name + target version.
 
@@ -9,8 +13,7 @@ Inputs from the user: package name + target version.
 
 ## Step 1 — Understand how the version is encoded
 
-Open `rocm-specs/SPECS/<pkg>/<pkg>.spec` and see how `Version` is built. Two
-common shapes:
+Open the spec file and see how `Version` is built. Two common shapes:
 
 - **Plain**: `Version:  3.6.0` → just edit it.
 - **ROCm split macros** (most of the ROCm stack), e.g. `rccl`:
@@ -68,9 +71,10 @@ A new version may change what gets installed or how it builds. Check for:
 ## Step 5 — Commit and trigger
 
 ```bash
-git -C rocm-specs add SPECS/<pkg>
-git -C rocm-specs commit -m "<pkg>: update to <version>"
-git -C rocm-specs push github main
+# Mainline
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: update to <version>" && git -C rocm-specs push github main'
+# ROCm 7.2.4 testing
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 add SPECS/<pkg> && git -C rocm-specs-7.2 commit -m "<pkg>: update to <version>" && git -C rocm-specs-7.2 push origin 7.2.4'
 ```
 
 The push to the GitHub remote triggers the rebuild automatically via the repo's

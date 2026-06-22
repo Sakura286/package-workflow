@@ -5,68 +5,105 @@ Coordinates for the OBS instance used by this stack:
 | | |
 |---|---|
 | API | `https://pickaxe.oerv.ac.cn` |
+| **Mainline project** | |
 | Project | `home:Sakura286:ROCm_PyTorch_Submit` |
 | Repo | `amd64_build` |
 | Arch | `x86_64` (some packages also `riscv64`) |
 | Local checkout | `home:Sakura286:ROCm_PyTorch_Submit/` (one subdir per package) |
+| Spec repo | `rocm-specs` (branch `main`) |
+| **ROCm 7.2.4 testing project** | |
+| Project | `home:Sakura286:ROCm_724` |
+| Repo | `amd64_build` |
+| Arch | `x86_64` |
+| Local checkout | `home:Sakura286:ROCm_724/` (one subdir per package) |
+| Spec repo | `rocm-specs-7.2` (branch `7.2.4`) |
 
-## Running osc from this machine
+## Running osc — first detect your runtime (inside WSL vs Windows host)
 
-The Bash/PowerShell tools here run on Windows; `osc` is installed **inside WSL**
-(`/usr/bin/osc`), not on the Windows PATH. Wrap every osc invocation through WSL:
+This workspace is on the WSL filesystem, but the agent may run from **either** inside
+the `ubuntu-26.04` distro or from the Windows host. Detect before running anything:
 
 ```bash
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
+grep -qi microsoft /proc/version 2>/dev/null && echo INSIDE-WSL || echo WINDOWS-HOST
 ```
 
-Credentials are already cached in WSL — osc runs non-interactively. Inside the OBS
-checkout directory the apiurl is stored in `.osc/`, so plain `osc <cmd>` works there
-without `-A`. `git` does **not** need the bridge — `git -C //wsl.localhost/...`
-(or `git -C <abs-path>`) works directly from the Windows-side shell.
+- **INSIDE-WSL** (`WSL_DISTRO_NAME=Ubuntu-26.04`, `osc`=`/usr/bin/osc`, `git`=`/usr/bin/git`):
+  run osc/git **directly** from `~/Repo/package-workflow`; `$` works normally.
+- **WINDOWS-HOST** (shells are PowerShell + Git-Bash; `osc` not on PATH; repo at
+  `\\wsl.localhost\ubuntu-26.04\…`): wrap every osc/git invocation through WSL —
+
+  ```bash
+  wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
+  ```
+
+  Plain Windows-side `git -C //wsl.localhost/...` also hits "dubious ownership", so route
+  git through the same bridge. Keep `$` out of the one-liner (the outer shell eats it).
+
+**Every osc/git example in this file is written in the WINDOWS-HOST (wrapped) form** —
+inside WSL, drop the `wsl.exe … bash -lc '…'` wrapper and run the inner command directly.
+Credentials are already cached in WSL, so osc runs non-interactively; inside an OBS
+checkout the apiurl is stored in `.osc/`, so plain `osc <cmd>` works without `-A`.
 
 ## Commands
 
 **Build status** (CSV: repo,arch,package,state,dirty,code,details):
 
 ```bash
+# Mainline
 osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_PyTorch_Submit <pkg> -r amd64_build -a x86_64 --csv
+# ROCm 7.2.4 testing
+osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_724 <pkg> -r amd64_build -a x86_64 --csv
 ```
 
 **Fetch the build log** (`rbl` = remotebuildlog). Save to `log/<pkg>-<NN>.log`,
 where `<NN>` is one past the latest existing log for that package:
 
 ```bash
+# Mainline
 osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64
+# ROCm 7.2.4 testing
+osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64
 ```
 
 **Trigger a rebuild.** `obs_scm` never polls the remote repo and this OBS has no
 webhook; a trigger happens one of three ways:
 
-1. **Automatic (the normal path):** `git push github main` on `rocm-specs`. The
-   repo's GitHub Actions workflow (`.github/workflows/trigger-obs.yml`) diffs the
+1. **Automatic (the normal path):** Push to the GitHub remote (via WSL).
+   The repo's GitHub Actions workflow (`.github/workflows/trigger-obs.yml`) diffs the
    push and, for every changed `SPECS/<pkg>/`, POSTs the OBS trigger API:
    `POST https://pickaxe.oerv.ac.cn/trigger/runservice?project=…&package=…` with
    header `Authorization: Token <secret>`. The secret is a global runservice
    token (`osc token --create --operation runservice`) stored as the GitHub repo
    secret `OBS_TRIGGER_TOKEN`.
+
+   - **Mainline** (`rocm-specs`): `git push github main` → triggers `home:Sakura286:ROCm_PyTorch_Submit`
+   - **ROCm 7.2.4 testing** (`rocm-specs-7.2`): `git push origin 7.2.4` → triggers `home:Sakura286:ROCm_724`
+
 2. **Manual workflow re-run:** GitHub → Actions → "Trigger OBS services" → Run
    workflow with `package=<pkg>` (useful after a 404 for a freshly created
    package, or when a run failed).
 3. **Manual via osc:**
 
 ```bash
+# Mainline
 osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>
+# ROCm 7.2.4 testing
+osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_724 <pkg>
 # rebuild without re-running services:
 osc -A https://pickaxe.oerv.ac.cn rebuildpac home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64
+osc -A https://pickaxe.oerv.ac.cn rebuildpac home:Sakura286:ROCm_724 <pkg> amd64_build x86_64
 ```
 
 ## Watching a build round: `scripts/watch-obs.sh`
 
 `scripts/watch-obs.sh <pkg> [pkg...]` (bash, runs inside WSL) waits for the
-pushed commit to be picked up by the OBS service, then polls `osc results`
-until every repo/arch of every named package reaches a final state. One stdout
-line per event — run it under the **Monitor tool** with `persistent: true` so
-each event wakes the agent and the watch survives multi-hour builds:
+pushed commit to be picked up by the OBS service, then watches each package in
+**two stages**: first only the gate row `amd64_build/x86_64` (≈10× faster than
+riscv64) — a failure there ends that package's watch immediately so the fix
+loop starts without waiting for riscv64 — and only after the gate is green
+does it watch the remaining repos/arches to a final state. One stdout line per
+event — run it under the **Monitor tool** with `persistent: true` so each
+event wakes the agent and the watch survives multi-hour builds:
 
 ```
 wsl.exe -d ubuntu-26.04 -- bash -lc '~/Repo/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
@@ -115,10 +152,20 @@ Plain literal commands — everything else in this file — are unaffected.
 Only when the package isn't in the project yet. From the local checkout:
 
 ```bash
+# Mainline
 cd home:Sakura286:ROCm_PyTorch_Submit
 osc mkpac <pkg>
 cp python-torch/_service <pkg>/_service     # start from a known-good _service
 # edit <pkg>/_service: set the extract path to SPECS/<pkg>/*
+cd <pkg>
+osc add _service
+osc ci -m "<pkg>: init"
+
+# ROCm 7.2.4 testing
+cd home:Sakura286:ROCm_724
+osc mkpac <pkg>
+cp ../home:Sakura286:ROCm_PyTorch_Submit/python-torch/_service <pkg>/_service
+# edit <pkg>/_service: set the extract path to SPECS/<pkg>/* AND revision to 7.2.4
 cd <pkg>
 osc add _service
 osc ci -m "<pkg>: init"
@@ -127,9 +174,11 @@ osc ci -m "<pkg>: init"
 `osc ci` uploads `_service`, and OBS runs it to pull the spec from git and build.
 After a clean `ci`, arm the watcher (see above) instead of polling — the `ci`
 itself ran the service, so use `SKIP_TRIGGER_CHECK=1` if the spec commit was
-already on `main` before the package existed on OBS.
+already on `main` (or `7.2.4`) before the package existed on OBS.
 
 ### `_service` template (current form, with `exclude`)
+
+**Mainline** (`rocm-specs/main`):
 
 ```xml
 <services>
@@ -137,6 +186,21 @@ already on `main` before the package existed on OBS.
     <param name="scm">git</param>
     <param name="url">https://github.com/Sakura286/rocm-specs</param>
     <param name="revision">main</param>
+    <param name="exclude">*</param>
+    <param name="extract">SPECS/<pkg>/*</param>
+  </service>
+  <service name="download_files"></service>
+</services>
+```
+
+**ROCm 7.2.4 testing** (`rocm-specs-7.2/7.2.4`):
+
+```xml
+<services>
+  <service name="obs_scm">
+    <param name="scm">git</param>
+    <param name="url">https://github.com/Sakura286/rocm-specs</param>
+    <param name="revision">7.2.4</param>
     <param name="exclude">*</param>
     <param name="extract">SPECS/<pkg>/*</param>
   </service>

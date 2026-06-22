@@ -8,7 +8,10 @@ home:Sakura286*
 tmp/
 openRuyi-rocm-7.2/
 rpms/
+binaries/
+rocm-specs-7.2/
 
 # Track .claude/skills, but not transient session worktrees or local settings
 .claude/worktrees/
 .claude/settings.local.json
+
