@@ -53,23 +53,51 @@ Cross-reference:
 
 ## Step 3 — Research the fix (and cite it)
 
-Investigate online — this is expected, not optional. Search the upstream project's
-GitHub issues, PRs, and commits (and distro bug trackers / forums) for the error
-string or symptom. Prefer adopting an upstream or another distro's fix over
-inventing one. **Record where the fix came from** (the issue/PR/commit URL) — it
-goes in the patch header and the commit message.
+> **HARD RULE: Do NOT write any code, patch, or sed fix before completing
+> this step. If you have not searched upstream for an existing fix, you are
+> not ready to write one.**
+>
+> This applies to spec files (`SPECS/<pkg>/<pkg>.spec` and associated
+> patches). It does NOT apply to OBS operations (triggering builds,
+> fetching logs, etc.).
 
-Also check how `rocm-specs` (or `rocm-specs-7.2.4`) handled this package before —
-past commits often encode the right approach or a related workaround:
+Investigate online — this is **mandatory, not optional**. Search the upstream
+project's GitHub issues, PRs, and commits for the error string or symptom.
+Also check other distros (Fedora, Arch, Gentoo) and this repo's history.
+
+### Search strategy (in order)
+
+1. **Upstream GitHub issues/PRs** — search the error message or symptom on the
+   upstream repo. Use `websearch` or `webfetch` on
+   `https://github.com/<org>/<repo>/issues?q=<keywords>` and
+   `https://github.com/<org>/<repo>/pulls?q=<keywords>`.
+2. **Upstream commits** — check if a fix was merged but not yet released:
+   `https://github.com/<org>/<repo>/commits/<branch>` or
+   `https://github.com/<org>/<repo>/commit/<hash>`.
+3. **Other distros** — search Fedora bugzilla, Arch AUR/GitLab, Gentoo
+   Bugzilla for the same error.
+4. **This repo's history** — check how `rocm-specs` (or `rocm-specs-7.2.4`)
+   handled this package before:
 
 ```bash
 # Mainline
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs log --oneline -- SPECS/<pkg>'
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs show <commit>'     # inspect a relevant past fix
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs show <commit>'
 # ROCm 7.2.4 testing
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs-7.2.4 log --oneline -- SPECS/<pkg>'
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs-7.2.4 show <commit>'
 ```
+
+### Fix priority
+
+1. **Upstream has a fix** (merged PR, commit) → adopt it directly, cite the URL
+2. **Another distro has a patch** → adapt it, cite the source
+3. **Upstream issue has a workaround** → adopt it, cite the issue
+4. **None of the above** → you may write your own fix, but note in the commit
+   message that no upstream fix was found
+
+**Record where the fix came from** — the URL goes in the patch header and the
+commit message body.
 
 ## Step 4 — Apply the fix
 
