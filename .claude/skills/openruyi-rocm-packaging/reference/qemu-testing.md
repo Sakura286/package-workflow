@@ -1,0 +1,117 @@
+# Reference: Testing in openRuyi Environments
+
+Two environments for verifying built RPMs in a real openRuyi system.
+
+## QEMU VM (x86_64) — preferred
+
+KVM-accelerated, native speed. Use for all x86_64 build verification.
+
+### Prerequisites
+
+- Image: `qemu/openruyi-virt_x86-64.tar.zst` (extract to `qemu/openruyi-virt_x86-64/`)
+- KVM: `/dev/kvm` must exist
+- QEMU: `qemu-system-x86_64` installed
+
+### Connection and lifecycle
+
+```
+SSH:  ssh -p 2222 openruyi@localhost    (password: openruyi)
+SCP:  scp -P 2222 <file> openruyi@localhost:/tmp/
+sudo: echo openruyi | sudo -S <cmd>
+```
+
+**VM startup:** The user starts the VM externally. If SSH fails, the Agent
+should check whether `qemu-system-x86_64` is running and attempt to start it:
+
+```bash
+pgrep -c qemu-system || echo "VM not running"
+```
+
+If the VM is not running, prompt the user to start it, or start it via
+`qemu/openruyi-virt_x86-64/start_vm.sh`.
+
+### OBS Repository (pre-configured)
+
+The VM has the OBS repo already configured at `/etc/yum.repos.d/obs-rocm.repo`:
+
+```
+[obs-rocm]
+name=OBS ROCm PyTorch Submit (amd64)
+baseurl=https://repo.build.openruyi.cn/home:/Sakura286:/ROCm_PyTorch_Submit/amd64_build/
+enabled=1
+gpgcheck=0
+```
+
+For ROCm 7.2.4 testing, update the baseurl to:
+`https://repo.build.openruyi.cn/home:/Sakura286:/ROCm_724/amd64_build/`
+
+dnf resolves dependencies across Base + OBS repos automatically.
+
+### Test workflow
+
+1. **SCP the RPM into the VM:**
+   ```
+   scp -P 2222 <pkg>.rpm openruyi@localhost:/tmp/
+   ```
+
+2. **Install with dependency resolution:**
+   ```
+   ssh -p 2222 openruyi@localhost "echo openruyi | sudo -S dnf install -y /tmp/<pkg>.rpm"
+   ```
+
+3. **Verify installation:**
+   ```
+   ssh -p 2222 openruyi@localhost "rpm -q <pkg>"
+   ssh -p 2222 openruyi@localhost "rpm -ql <pkg> | head -20"
+   ```
+
+4. **Python import test (for Python packages):**
+   ```
+   ssh -p 2222 openruyi@localhost "python3 -c 'import <module>'"
+   ```
+
+5. **Binary execution test (if applicable):**
+   ```
+   ssh -p 2222 openruyi@localhost "<binary> --version"
+   ```
+
+### Cleanup (REQUIRED after every test session)
+
+```
+ssh -p 2222 openruyi@localhost "echo openruyi | sudo -S dnf remove -y <pkg>"
+ssh -p 2222 openruyi@localhost "echo openruyi | sudo -S dnf autoremove -y"
+ssh -p 2222 openruyi@localhost "rm -f /tmp/<pkg>.rpm"
+```
+
+`dnf remove` uninstalls the tested package; `dnf autoremove` cleans up
+dependencies that are no longer needed.
+
+---
+
+## Docker Container (riscv64)
+
+For testing riscv64 builds. Slower (QEMU emulation), but no VM setup needed.
+
+### Pull image
+
+```
+docker pull ghcr.io/openruyi-project/creek:latest
+```
+
+### Test workflow
+
+1. **Mount RPM directory and install:**
+   ```
+   docker run --rm --platform linux/riscv64 -v /tmp/obs-rpms:/mnt/rpms \
+     ghcr.io/openruyi-project/creek:latest sh -c 'rpm -ivh /mnt/rpms/<pkg>.rpm'
+   ```
+
+2. **Python import test:**
+   ```
+   docker run --rm --platform linux/riscv64 ghcr.io/openruyi-project/creek:latest \
+     python3 -c "import <module>"
+   ```
+
+### Cleanup
+
+Docker containers use `--rm` and are destroyed on exit. No manual cleanup needed.

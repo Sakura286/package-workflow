@@ -153,3 +153,16 @@ the package, when the fix requires a judgment call (version pins, disabling
 tests/features beyond repo precedent, anything near `llvm-21`), or when the
 failure is OBS infrastructure rather than the package. A log handed over by the
 user mid-round always takes priority over watcher events.
+
+## Step 7 — Verify in openRuyi environment (optional)
+
+After a build succeeds, verify the package in a real openRuyi environment
+**only when the user requests it**. See `reference/qemu-testing.md` for details.
+
+For x86_64 (QEMU VM):
+1. Check if VM is running (`pgrep -c qemu-system`), prompt user to start if not
+2. Download the RPM from OBS: `osc api "/build/.../<pkg>/<rpm>" > /tmp/<rpm>`
+3. SCP into VM: `scp -P 2222 /tmp/<rpm> openruyi@localhost:/tmp/`
+4. Install: `ssh ... "echo openruyi | sudo -S dnf install -y /tmp/<rpm>"`
+5. Verify: `rpm -q`, Python import, binary test
+6. **Cleanup:** `ssh ... "echo openruyi | sudo -S dnf remove -y <pkg> && echo openruyi | sudo -S dnf autoremove -y"`

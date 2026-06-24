@@ -297,3 +297,23 @@ and ask the user** instead when:
 The watcher lives only as long as the Claude Code session — if the user is
 about to close it mid-build, say so. The user may still hand back a saved log
 manually at any time; that path keeps working regardless of the watcher.
+
+---
+
+## Testing in openRuyi environments
+
+Verify built RPMs in a real openRuyi system. **Only test when the user requests
+it**, or when verification is needed during packaging/fixing. See
+`reference/qemu-testing.md` for full details.
+
+| Environment | Arch | Speed | Use for |
+|---|---|---|---|
+| QEMU VM | x86_64 | Fast (KVM) | Default — all x86_64 verification |
+| Docker | riscv64 | Slow (emulated) | riscv64 verification only |
+
+**Test workflow (x86_64 QEMU VM):**
+1. Check if VM is running (`pgrep -c qemu-system`), prompt user to start if not
+2. SCP the RPM into the VM
+3. `dnf install` with dependency resolution
+4. Verify: `rpm -q`, `rpm -ql`, Python import, binary execution
+5. **Cleanup:** `dnf remove` the tested package + `dnf autoremove` for deps
