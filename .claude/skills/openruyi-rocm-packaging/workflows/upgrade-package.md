@@ -42,7 +42,7 @@ sha256sum /tmp/<pkg>.tar.gz
 ```
 
 For PyPI packages you can read the sha256 directly off the PyPI release page. Also
-refresh the source in `orig_code/` to the new tag so you can test patches in Step 3.
+refresh the source in `src/` to the new tag so you can test patches in Step 3.
 
 ## Step 3 — Refresh patches
 

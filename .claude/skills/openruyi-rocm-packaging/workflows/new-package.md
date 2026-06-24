@@ -42,8 +42,8 @@ package's history if it ever existed: `wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~
 
 ## Step 2 — Get the source
 
-Fuzzy-match `orig_code/` for the upstream source (see SKILL.md). If absent,
-download per the spec's `Source0:` into `orig_code/` (ROCm github:
+Fuzzy-match `src/` for the upstream source (see SKILL.md). If absent,
+download per the spec's `Source0:` into `src/` (ROCm github:
 `git clone --depth=1 --branch=rocm-<ver> <repo>`; tag missing → note it and use the
 default branch; non-github → fetch the tarball and extract).
 

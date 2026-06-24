@@ -80,14 +80,14 @@ Paths are relative to the workspace root (`package-workflow/`).
 | `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo (mainline). Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. **The local remote is named `github`** — push with `git push github main`; `origin` still points at the retired Gitea instance and pushing there does nothing. |
 | `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` | **ROCm 7.2.4 testing spec repo.** Cloned from the same GitHub repo, branch `7.2.4`. Remote `origin` points to `git@github.com:Sakura286/rocm-specs.git`. Push with `git push origin 7.2.4`. |
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
-| `orig_code/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). |
+| `src/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). |
 | `openRuyi/SPECS/` | The rest of the distro's specs. Reference for format and for how a dependency is packaged. |
 | `log/<pkg>-<NN>.log` | Build logs, manually sequence-numbered. Sometimes an arch/status suffix (`amdsmi-04-riscv64.log`, `python-torch-02-success.log`). |
 | `home:Sakura286:ROCm_PyTorch_Submit/` | OBS local checkout for mainline (one subdir per OBS package, each with a `_service`). |
 | `home:Sakura286:ROCm_724/` | OBS local checkout for ROCm 7.2.4 testing (one subdir per OBS package, each with a `_service`). |
 | `homepage/docs/packaging-guidelines/` | The openRuyi packaging guide (authoritative). |
 
-### Matching a package to its source in `orig_code/`
+### Matching a package to its source in `src/`
 
 The source directory is usually the upstream project name, which differs from the
 spec name in **case** and sometimes entirely. Match case-insensitively and by
@@ -100,7 +100,7 @@ hipsparse -> hipSPARSE      rocthrust -> rocThrust     rocm-origami  -> origami
 python-torch -> pytorch     python-triton -> triton    python-mistral-common -> mistral-common
 ```
 
-If no source dir exists, download it per the spec's `Source0:` into `orig_code/`
+If no source dir exists, download it per the spec's `Source0:` into `src/`
 (ROCm github: `git clone --depth=1 --branch=rocm-<ver> <repo>`; if that tag is
 missing, note it in a comment and use the default branch; non-github: fetch the
 tarball and extract).

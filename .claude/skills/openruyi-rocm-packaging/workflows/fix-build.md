@@ -47,7 +47,7 @@ cascade of follow-on errors it triggers.
 Cross-reference:
 - the spec at `rocm-specs/SPECS/<pkg>/<pkg>.spec` (or `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec`
   for ROCm 7.2.4 testing),
-- the upstream source in `orig_code/<SourceName>/` (fuzzy match) when the error is
+- the upstream source in `src/<SourceName>/` (fuzzy match) when the error is
   in the code/build, and
 - earlier logs in `log/` for the same package to see what changed.
 
