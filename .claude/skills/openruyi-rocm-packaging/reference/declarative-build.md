@@ -106,6 +106,42 @@ When adapting a Fedora rawhide spec (`rpms/<pkg>/<pkg>.spec`) into
   (`%global _lto_cflags %{nil}`, `_find_debuginfo_dwz_opts %{nil}`) — see
   `python-triton`, `python-torch`.
 
+## Debugging tips
+
+### Check cmake configure output, not just build errors
+
+The cmake configure phase often reveals the root cause of build failures that
+manifest later. When a build fails, read the configure output first — look for:
+- `Detecting ... compiler ABI info - failed`
+- `Could NOT find ...`
+- `CMake Warning` / `CMake Error` lines
+- Variables that are empty or have unexpected values
+
+The configure phase runs before compilation; a problem there cascades into
+mysterious build errors. Fix the configure issue first.
+
+### Understand how spec options reach the build tool
+
+The path from a spec `%build` export to the actual cmake/compiler flag depends
+on the build system:
+- **cmake (direct):** `export FOO=bar` → cmake sees it only if explicitly
+  passed via `-DFOO=bar` or if the code reads `$ENV{FOO}`.
+- **pyproject (pytorch-style):** `setup_helpers/cmake.py` auto-exports all
+  `CMAKE_*` env vars as `-D` flags. So `export CMAKE_X=8` works directly.
+- **pyproject (standard):** `%pyproject_wheel` doesn't pass cmake env vars.
+  Use `BuildOption(conf):` instead.
+
+Understanding this chain lets you find "set once, fix everywhere" solutions
+instead of scattered patches.
+
+### Don't trust comments as truth
+
+Spec comments, commit messages, and even upstream documentation may describe
+a problem incompletely or incorrectly. A comment saying "this fails on riscv64"
+doesn't mean it only fails on riscv64 — verify from the build log.
+
+Always check the actual build log output before assuming the cause.
+
 Authoritative rules, when in doubt, are in `homepage/docs/packaging-guidelines/`
 (`rpmspecification.md`, `naming.md`, `sourceurl.md`, `versioning.md`, `licenses.md`,
 `patches.md`, `scriptlets.md`).
