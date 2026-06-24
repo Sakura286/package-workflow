@@ -67,6 +67,8 @@ workflow file. For depth, the workflow files point into `reference/`.
 - **Mainline** (`rocm-specs/main` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
 - **ROCm 7.2.4 testing** (`rocm-specs-7.2/7.2.4` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
+**Default rule:** Unless explicitly specified otherwise, all fixes and changes target the **mainline** (`rocm-specs` folder, not `rocm-specs-7.2`).
+
 ---
 
 ## Workspace layout
