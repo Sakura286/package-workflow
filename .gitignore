@@ -9,7 +9,7 @@ tmp/
 openRuyi-rocm-7.2/
 rpms/
 binaries/
-rocm-specs-7.2/
+rocm-specs-7.2.4/
 
 # Track .claude/skills, but not transient session worktrees or local settings
 .claude/worktrees/

@@ -5,7 +5,7 @@ source/checksum and patches, commit, and trigger the rebuild.
 
 **Which repo/project to use:**
 - **Mainline** (`rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
 Inputs from the user: package name + target version.
 
@@ -74,7 +74,7 @@ A new version may change what gets installed or how it builds. Check for:
 # Mainline
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: update to <version>" && git -C rocm-specs push github main'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 add SPECS/<pkg> && git -C rocm-specs-7.2 commit -m "<pkg>: update to <version>" && git -C rocm-specs-7.2 push origin 7.2.4'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: update to <version>" && git -C rocm-specs-7.2.4 push origin 7.2.4'
 ```
 
 The push to the GitHub remote triggers the rebuild automatically via the repo's

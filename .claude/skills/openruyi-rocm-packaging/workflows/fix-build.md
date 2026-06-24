@@ -5,7 +5,7 @@ properly-sourced patch), commit, and trigger a rebuild.
 
 **Which repo/project to use:**
 - **Mainline** (`rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
 Inputs from the user: the package name, and usually a hint that it failed. The user
 may have dropped a fresh log in `log/`, or expect you to fetch it.
@@ -45,7 +45,7 @@ the whole log for the failure. Useful patterns: `error:`, `Error`, `FAILED`,
 cascade of follow-on errors it triggers.
 
 Cross-reference:
-- the spec at `rocm-specs/SPECS/<pkg>/<pkg>.spec` (or `rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec`
+- the spec at `rocm-specs/SPECS/<pkg>/<pkg>.spec` (or `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec`
   for ROCm 7.2.4 testing),
 - the upstream source in `orig_code/<SourceName>/` (fuzzy match) when the error is
   in the code/build, and
@@ -59,7 +59,7 @@ string or symptom. Prefer adopting an upstream or another distro's fix over
 inventing one. **Record where the fix came from** (the issue/PR/commit URL) — it
 goes in the patch header and the commit message.
 
-Also check how `rocm-specs` (or `rocm-specs-7.2`) handled this package before —
+Also check how `rocm-specs` (or `rocm-specs-7.2.4`) handled this package before —
 past commits often encode the right approach or a related workaround:
 
 ```bash
@@ -67,8 +67,8 @@ past commits often encode the right approach or a related workaround:
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs log --oneline -- SPECS/<pkg>'
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs show <commit>'     # inspect a relevant past fix
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 log --oneline -- SPECS/<pkg>'
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 show <commit>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 log --oneline -- SPECS/<pkg>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 show <commit>'
 ```
 
 ## Step 4 — Apply the fix
@@ -77,7 +77,7 @@ Prefer a **patch** over ad-hoc edits, because patches are reviewable, carry thei
 provenance, and survive version bumps:
 
 - Put the patch file in the spec directory (`rocm-specs/SPECS/<pkg>/` or
-  `rocm-specs-7.2/SPECS/<pkg>/`), add `PatchN:  <file>` and apply
+  `rocm-specs-7.2.4/SPECS/<pkg>/`), add `PatchN:  <file>` and apply
   it (autosetup, or `%patch -P N -p1`). Give it a descriptive name and a header
   that explains the change and links the upstream source
   (see `homepage/docs/packaging-guidelines/patches.md`).
@@ -123,8 +123,8 @@ source to credit:
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: fix <issue>"'   # add -m "<url>" body if citing upstream
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs push github main'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 add SPECS/<pkg> && git -C rocm-specs-7.2 commit -m "<pkg>: fix <issue>"'   # add -m "<url>" body if citing upstream
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 push origin 7.2.4'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: fix <issue>"'   # add -m "<url>" body if citing upstream
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 push origin 7.2.4'
 ```
 
 The push to the GitHub remote is all it takes: the repo's Actions workflow

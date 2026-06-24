@@ -5,7 +5,7 @@ declarative style, then commit and trigger its OBS build.
 
 **Which repo/project to use:**
 - **Mainline** (`rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
 Inputs from the user: the package name; sometimes a source URL. Ask only if the
 name is ambiguous or no source can be found.
@@ -17,7 +17,7 @@ name is ambiguous or no source can be found.
 ## Step 1 — Get a reference spec (Fedora rawhide first)
 
 Fedora is the starting point. Clone its spec into `rpms/` (reference only — keep
-its `.git`, never commit it into `rocm-specs` or `rocm-specs-7.2`):
+its `.git`, never commit it into `rocm-specs` or `rocm-specs-7.2.4`):
 
 ```bash
 git clone https://src.fedoraproject.org/rpms/<pkg>.git
@@ -33,7 +33,7 @@ git clone https://src.fedoraproject.org/rpms/<pkg>.git
 
   If a draft exists, use it as the base (drop its `.git`; don't commit it as-is).
 - If neither source has it, write from scratch: use the information the user
-  provides plus a sibling spec in `rocm-specs` (or `rocm-specs-7.2`) as the format
+  provides plus a sibling spec in `rocm-specs` (or `rocm-specs-7.2.4`) as the format
   template. Good templates: `rccl`, `rocrand`, `hipsparse` (cmake); `python-triton`
   (pyproject with a bundled build).
 
@@ -71,7 +71,7 @@ every rule in `reference/declarative-build.md`. The essentials:
 
 **Where to create the spec:**
 - **Mainline**: `rocm-specs/SPECS/<pkg>/<pkg>.spec`
-- **ROCm 7.2.4 testing**: `rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec`
+- **ROCm 7.2.4 testing**: `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec`
 
 ## Step 4 — Commit
 
@@ -79,7 +79,7 @@ every rule in `reference/declarative-build.md`. The essentials:
 # Mainline
 wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: init" && git -C rocm-specs push github main'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2 add SPECS/<pkg> && git -C rocm-specs-7.2 commit -m "<pkg>: init" && git -C rocm-specs-7.2 push origin 7.2.4'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: init" && git -C rocm-specs-7.2.4 push origin 7.2.4'
 ```
 
 If you want to mirror the historical two-step (import, then reformat), make the

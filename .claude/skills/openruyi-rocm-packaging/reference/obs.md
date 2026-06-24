@@ -16,7 +16,7 @@ Coordinates for the OBS instance used by this stack:
 | Repo | `amd64_build` |
 | Arch | `x86_64` |
 | Local checkout | `home:Sakura286:ROCm_724/` (one subdir per package) |
-| Spec repo | `rocm-specs-7.2` (branch `7.2.4`) |
+| Spec repo | `rocm-specs-7.2.4` (branch `7.2.4`) |
 
 ## Running osc — first detect your runtime (inside WSL vs Windows host)
 
@@ -77,7 +77,7 @@ webhook; a trigger happens one of three ways:
    secret `OBS_TRIGGER_TOKEN`.
 
    - **Mainline** (`rocm-specs`): `git push github main` → triggers `home:Sakura286:ROCm_PyTorch_Submit`
-   - **ROCm 7.2.4 testing** (`rocm-specs-7.2`): `git push origin 7.2.4` → triggers `home:Sakura286:ROCm_724`
+   - **ROCm 7.2.4 testing** (`rocm-specs-7.2.4`): `git push origin 7.2.4` → triggers `home:Sakura286:ROCm_724`
 
 2. **Manual workflow re-run:** GitHub → Actions → "Trigger OBS services" → Run
    workflow with `package=<pkg>` (useful after a 404 for a freshly created
@@ -193,7 +193,7 @@ already on `main` (or `7.2.4`) before the package existed on OBS.
 </services>
 ```
 
-**ROCm 7.2.4 testing** (`rocm-specs-7.2/7.2.4`):
+**ROCm 7.2.4 testing** (`rocm-specs-7.2.4/7.2.4`):
 
 ```xml
 <services>

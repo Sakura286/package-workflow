@@ -55,7 +55,7 @@ INSIDE-WSL, strip the `wsl.exe … bash -lc '…'` wrapper and run the inner com
 
 | The user wants to… | Read |
 |---|---|
-| Add a brand-new package to `rocm-specs` or `rocm-specs-7.2` | `workflows/new-package.md` |
+| Add a brand-new package to `rocm-specs` or `rocm-specs-7.2.4` | `workflows/new-package.md` |
 | Bump an existing package to a new version | `workflows/upgrade-package.md` |
 | Fix a failing build from the latest log | `workflows/fix-build.md` |
 
@@ -65,9 +65,9 @@ workflow file. For depth, the workflow files point into `reference/`.
 
 **Which repo/project to use:**
 - **Mainline** (`rocm-specs/main` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2/7.2.4` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4/7.2.4` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
 
-**Default rule:** Unless explicitly specified otherwise, all fixes and changes target the **mainline** (`rocm-specs` folder, not `rocm-specs-7.2`).
+**Default rule:** Unless explicitly specified otherwise, all fixes and changes target the **mainline** (`rocm-specs` folder, not `rocm-specs-7.2.4`).
 
 ---
 
@@ -78,7 +78,7 @@ Paths are relative to the workspace root (`package-workflow/`).
 | Path | What it is |
 |---|---|
 | `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo (mainline). Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. **The local remote is named `github`** — push with `git push github main`; `origin` still points at the retired Gitea instance and pushing there does nothing. |
-| `rocm-specs-7.2/SPECS/<pkg>/<pkg>.spec` | **ROCm 7.2.4 testing spec repo.** Cloned from the same GitHub repo, branch `7.2.4`. Remote `origin` points to `git@github.com:Sakura286/rocm-specs.git`. Push with `git push origin 7.2.4`. |
+| `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` | **ROCm 7.2.4 testing spec repo.** Cloned from the same GitHub repo, branch `7.2.4`. Remote `origin` points to `git@github.com:Sakura286/rocm-specs.git`. Push with `git push origin 7.2.4`. |
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
 | `orig_code/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). |
 | `openRuyi/SPECS/` | The rest of the distro's specs. Reference for format and for how a dependency is packaged. |
@@ -192,7 +192,7 @@ Two OBS projects are used:
 | Project | Purpose | Repo/Branch |
 |---|---|---|
 | `home:Sakura286:ROCm_PyTorch_Submit` | Mainline ROCm packages (production) | `rocm-specs/main` |
-| `home:Sakura286:ROCm_724` | ROCm 7.2.4 testing | `rocm-specs-7.2/7.2.4` |
+| `home:Sakura286:ROCm_724` | ROCm 7.2.4 testing | `rocm-specs-7.2.4/7.2.4` |
 
 Both use repo `amd64_build`, arch `x86_64` (some packages also build `riscv64`).
 API: `https://pickaxe.oerv.ac.cn`.
@@ -218,7 +218,7 @@ trigger API (`POST /trigger/runservice`, global token stored as the repo secret
 - **Mainline** (`rocm-specs`): push with `git push github main` (via WSL) —
   triggers `home:Sakura286:ROCm_PyTorch_Submit`. `origin` is the retired Gitea
   and OBS never sees pushes there.
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2`): push with `git push origin 7.2.4`
+- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4`): push with `git push origin 7.2.4`
   (via WSL) — triggers `home:Sakura286:ROCm_724`.
 
 (`obs_scm` never polls git and this OBS has no webhook;
