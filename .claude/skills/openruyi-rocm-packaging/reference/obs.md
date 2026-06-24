@@ -28,12 +28,12 @@ grep -qi microsoft /proc/version 2>/dev/null && echo INSIDE-WSL || echo WINDOWS-
 ```
 
 - **INSIDE-WSL** (`WSL_DISTRO_NAME=Ubuntu-26.04`, `osc`=`/usr/bin/osc`, `git`=`/usr/bin/git`):
-  run osc/git **directly** from `~/Repo/package-workflow`; `$` works normally.
+  run osc/git **directly** from `~/Desktop/package-workflow`; `$` works normally.
 - **WINDOWS-HOST** (shells are PowerShell + Git-Bash; `osc` not on PATH; repo at
   `\\wsl.localhost\ubuntu-26.04\…`): wrap every osc/git invocation through WSL —
 
   ```bash
-  wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
+  wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
   ```
 
   Plain Windows-side `git -C //wsl.localhost/...` also hits "dubious ownership", so route
@@ -106,7 +106,7 @@ event — run it under the **Monitor tool** with `persistent: true` so each
 event wakes the agent and the watch survives multi-hour builds:
 
 ```
-wsl.exe -d ubuntu-26.04 -- bash -lc '~/Repo/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
+wsl.exe -d ubuntu-26.04 -- bash -lc '~/Desktop/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
 ```
 
 Events:

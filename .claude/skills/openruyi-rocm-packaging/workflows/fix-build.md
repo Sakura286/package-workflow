@@ -22,15 +22,15 @@ may have dropped a fresh log in `log/`, or expect you to fetch it.
 ```bash
 # status (optional)
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_PyTorch_Submit <pkg> -r amd64_build -a x86_64 --csv'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_PyTorch_Submit <pkg> -r amd64_build -a x86_64 --csv'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_724 <pkg> -r amd64_build -a x86_64 --csv'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_724 <pkg> -r amd64_build -a x86_64 --csv'
 
 # log -> log/<pkg>-<NN>.log
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 ```
 
 Most ROCm packages fail on `x86_64`; some also build `riscv64`. If the failure is
@@ -64,11 +64,11 @@ past commits often encode the right approach or a related workaround:
 
 ```bash
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs log --oneline -- SPECS/<pkg>'
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs show <commit>'     # inspect a relevant past fix
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs log --oneline -- SPECS/<pkg>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs show <commit>'     # inspect a relevant past fix
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 log --oneline -- SPECS/<pkg>'
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 show <commit>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs-7.2.4 log --oneline -- SPECS/<pkg>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs-7.2.4 show <commit>'
 ```
 
 ## Step 4 — Apply the fix
@@ -120,11 +120,11 @@ source to credit:
 
 ```bash
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: fix <issue>"'   # add -m "<url>" body if citing upstream
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs push github main'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: fix <issue>"'   # add -m "<url>" body if citing upstream
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs push github main'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: fix <issue>"'   # add -m "<url>" body if citing upstream
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 push origin 7.2.4'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: fix <issue>"'   # add -m "<url>" body if citing upstream
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs-7.2.4 push origin 7.2.4'
 ```
 
 The push to the GitHub remote is all it takes: the repo's Actions workflow
@@ -137,7 +137,7 @@ Don't poll in the foreground; arm the build watcher (Monitor tool,
 `persistent: true`) and let its events call you back:
 
 ```
-wsl.exe -d ubuntu-26.04 -- bash -lc '~/Repo/package-workflow/scripts/watch-obs.sh <pkg>'
+wsl.exe -d ubuntu-26.04 -- bash -lc '~/Desktop/package-workflow/scripts/watch-obs.sh <pkg>'
 ```
 
 - `RESULT <pkg> … failed/unresolvable/broken` → loop back to Step 1: fetch the

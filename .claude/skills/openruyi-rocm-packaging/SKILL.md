@@ -41,10 +41,10 @@ grep -qi microsoft /proc/version 2>/dev/null && echo INSIDE-WSL || echo WINDOWS-
 ```
 
 - **INSIDE-WSL** — `WSL_DISTRO_NAME=Ubuntu-26.04`, `osc`/`git` are on PATH. Run every
-  command **directly** from `~/Repo/package-workflow`; `$` works normally.
+  command **directly** from `~/Desktop/package-workflow`; `$` works normally.
 - **WINDOWS-HOST** — your shells are PowerShell + Git-Bash, `osc` is not on PATH, the repo
   is at `\\wsl.localhost\ubuntu-26.04\…`. Wrap every osc/git command through WSL:
-  `wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && <CMD>'`, and keep `$`
+  `wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && <CMD>'`, and keep `$`
   out of the one-liner (it gets eaten — put variable logic in a WSL script). If your only
   shell is PowerShell, you're on the Windows host.
 
@@ -115,8 +115,8 @@ Never commit as Claude or any other identity. If you ever clone a fresh repo to
 commit into, set this identity first (via WSL):
 
 ```bash
-wsl.exe -d ubuntu-26.04 -- bash -lc 'git -C ~/Repo/package-workflow/<repo> config user.name  "CHEN Xuan"'
-wsl.exe -d ubuntu-26.04 -- bash -lc 'git -C ~/Repo/package-workflow/<repo> config user.email "chenxuan@iscas.ac.cn"'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'git -C ~/Desktop/package-workflow/<repo> config user.name  "CHEN Xuan"'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'git -C ~/Desktop/package-workflow/<repo> config user.email "chenxuan@iscas.ac.cn"'
 ```
 
 Commit messages mimic the existing history — **one line, `<package>: <short desc>`**,
@@ -202,7 +202,7 @@ Full command reference and the `_service` template: `reference/obs.md`.
 (see "First: detect your runtime" above):
 
 ```bash
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
 ```
 
 On the Windows host neither `osc` nor `git` is on PATH, so both go through this WSL bridge
@@ -229,9 +229,9 @@ GitHub → Actions → "Trigger OBS services" → Run workflow with `package=<pk
 
 ```bash
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_724 <pkg>'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_724 <pkg>'
 ```
 
 To confirm a trigger landed, list the expanded sources — the
@@ -241,9 +241,9 @@ script below performs this check automatically; the manual form is:
 
 ```bash
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_PyTorch_Submit/<pkg>?expand=1"'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_PyTorch_Submit/<pkg>?expand=1"'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_724/<pkg>?expand=1"'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_724/<pkg>?expand=1"'
 ```
 
 **Create a new OBS package** (only when it doesn't exist yet): see
@@ -254,9 +254,9 @@ number `<NN>`:
 
 ```bash
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64' > log/<pkg>-<NN>.log
 ```
 
 **After triggering — arm the watcher, never poll in the foreground.** Builds
@@ -266,7 +266,7 @@ with `persistent: true` (builds outlive any timeout), naming the package(s) just
 pushed:
 
 ```
-wsl.exe -d ubuntu-26.04 -- bash -lc '~/Repo/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
+wsl.exe -d ubuntu-26.04 -- bash -lc '~/Desktop/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
 ```
 
 The script first confirms the trigger landed (expanded sources pick up the new

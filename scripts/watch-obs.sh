@@ -39,7 +39,7 @@ set -u
 
 API=https://pickaxe.oerv.ac.cn
 PRJ=home:Sakura286:ROCm_PyTorch_Submit
-ROOT=~/Repo/package-workflow
+ROOT=~/Desktop/package-workflow
 POLL=${POLL:-60}
 TRIGGER_TIMEOUT=${TRIGGER_TIMEOUT:-900}
 GATE=${GATE:-amd64_build/x86_64}

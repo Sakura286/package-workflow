@@ -38,7 +38,7 @@ git clone https://src.fedoraproject.org/rpms/<pkg>.git
   (pyproject with a bundled build).
 
 Also look at how `rocm-specs` already handles related packages and at this
-package's history if it ever existed: `wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs log --oneline -- SPECS/<pkg>'`.
+package's history if it ever existed: `wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs log --oneline -- SPECS/<pkg>'`.
 
 ## Step 2 — Get the source
 
@@ -77,9 +77,9 @@ every rule in `reference/declarative-build.md`. The essentials:
 
 ```bash
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: init" && git -C rocm-specs push github main'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: init" && git -C rocm-specs push github main'
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow && git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: init" && git -C rocm-specs-7.2.4 push origin 7.2.4'
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: init" && git -C rocm-specs-7.2.4 push origin 7.2.4'
 ```
 
 If you want to mirror the historical two-step (import, then reformat), make the
@@ -97,19 +97,19 @@ create the package (details and the `_service` template in `reference/obs.md`):
 
 ```bash
 # Mainline
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_PyTorch_Submit \
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow/home:Sakura286:ROCm_PyTorch_Submit \
   && osc mkpac <pkg> \
   && cp python-torch/_service <pkg>/_service'
 # edit <pkg>/_service: change the extract path to SPECS/<pkg>/*
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_PyTorch_Submit/<pkg> \
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow/home:Sakura286:ROCm_PyTorch_Submit/<pkg> \
   && osc add _service && osc ci -m "<pkg>: init"'
 
 # ROCm 7.2.4 testing
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_724 \
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow/home:Sakura286:ROCm_724 \
   && osc mkpac <pkg> \
   && cp ../home:Sakura286:ROCm_PyTorch_Submit/python-torch/_service <pkg>/_service'
 # edit <pkg>/_service: change the extract path to SPECS/<pkg>/* AND revision to 7.2.4
-wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Repo/package-workflow/home:Sakura286:ROCm_724/<pkg> \
+wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow/home:Sakura286:ROCm_724/<pkg> \
   && osc add _service && osc ci -m "<pkg>: init"'
 ```
 
