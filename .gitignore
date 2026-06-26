@@ -14,6 +14,8 @@ rocm-specs-7.2.4/
 qemu/
 .mimocode/
 
+scratchpad/
+
 # Track .claude/skills, but not transient session worktrees or local settings
 .claude/worktrees/
 .claude/settings.local.json
