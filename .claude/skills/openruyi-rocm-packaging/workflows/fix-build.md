@@ -44,6 +44,13 @@ the whole log for the failure. Useful patterns: `error:`, `Error`, `FAILED`,
 `Could NOT find`, `ninja: build stopped`. Distinguish the first real error from the
 cascade of follow-on errors it triggers.
 
+If the error looks like the package meeting a **newer LLVM** than it was written for
+— a cmake "imported target … references … but this file does not exist", a
+device-libs "'__builtin_amdgcn_X' needs target feature Y", a relocated clang
+header/namespace/method in comgr, or a post-bump `%files` mismatch — switch to the
+**`rocm-llvm-bump`** skill, which catalogs these by build phase with upstream-sourced
+fixes.
+
 Cross-reference:
 - the spec at `rocm-specs/SPECS/<pkg>/<pkg>.spec` (or `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec`
   for ROCm 7.2.4 testing),
@@ -178,7 +185,8 @@ scripts/watch-obs.sh <pkg>
 **Know when to stop looping.** Hand back to the user instead of pushing another
 attempt when the same root error survives a fix, when ~3 attempts haven't moved
 the package, when the fix requires a judgment call (version pins, disabling
-tests/features beyond repo precedent, anything near `llvm-21`), or when the
+tests/features beyond repo precedent, or an open-ended source port across an
+LLVM/clang version bump — see the `rocm-llvm-bump` skill), or when the
 failure is OBS infrastructure rather than the package. A log handed over by the
 user mid-round always takes priority over watcher events.
 

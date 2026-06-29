@@ -50,6 +50,14 @@ PATH), every osc/git command must be wrapped through WSL — the wrapper, the
 | Bump an existing package to a new version | `workflows/upgrade-package.md` |
 | Fix a failing build from the latest log | `workflows/fix-build.md` |
 
+> **LLVM/clang version drift has a companion skill — `rocm-llvm-bump`.** Reach for
+> it alongside `fix-build.md` whenever a ROCm build fails with the signature of the
+> package meeting a newer LLVM than it was written for: a cmake "imported target …
+> references … but this file does not exist" (missing `-static` libs), a device-libs
+> "'__builtin_amdgcn_X' needs target feature Y", a relocated/renamed clang
+> header/namespace/method in comgr, or a post-bump `%files` "File not found" /
+> "Installed (but unpackaged)". It catalogs these by build phase, with fixes.
+
 All three end the same way: commit to the spec repo and trigger the OBS build.
 The conventions below apply to every workflow — read them first, then open the
 workflow file. For depth, the workflow files point into `reference/`.
