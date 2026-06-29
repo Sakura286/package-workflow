@@ -18,31 +18,13 @@ Coordinates for the OBS instance used by this stack:
 | Local checkout | `home:Sakura286:ROCm_724/` (one subdir per package) |
 | Spec repo | `rocm-specs-7.2.4` (branch `7.2.4`) |
 
-## Running osc — first detect your runtime (inside WSL vs Windows host)
+## Running osc
 
-This workspace is on the WSL filesystem, but the agent may run from **either** inside
-the `ubuntu-26.04` distro or from the Windows host. Detect before running anything:
-
-```bash
-grep -qi microsoft /proc/version 2>/dev/null && echo INSIDE-WSL || echo WINDOWS-HOST
-```
-
-- **INSIDE-WSL** (`WSL_DISTRO_NAME=Ubuntu-26.04`, `osc`=`/usr/bin/osc`, `git`=`/usr/bin/git`):
-  run osc/git **directly** from `~/Desktop/package-workflow`; `$` works normally.
-- **WINDOWS-HOST** (shells are PowerShell + Git-Bash; `osc` not on PATH; repo at
-  `\\wsl.localhost\ubuntu-26.04\…`): wrap every osc/git invocation through WSL —
-
-  ```bash
-  wsl.exe -d ubuntu-26.04 -- bash -lc 'cd ~/Desktop/package-workflow && osc -A https://pickaxe.oerv.ac.cn <args>'
-  ```
-
-  Plain Windows-side `git -C //wsl.localhost/...` also hits "dubious ownership", so route
-  git through the same bridge. Keep `$` out of the one-liner (the outer shell eats it).
-
-**Every osc/git example in this file is written in the WINDOWS-HOST (wrapped) form** —
-inside WSL, drop the `wsl.exe … bash -lc '…'` wrapper and run the inner command directly.
-Credentials are already cached in WSL, so osc runs non-interactively; inside an OBS
-checkout the apiurl is stored in `.osc/`, so plain `osc <cmd>` works without `-A`.
+`osc` and `git` are on PATH; run every command **directly from the workspace root**
+(all examples here use the bare form). Credentials are cached, so osc runs
+non-interactively; inside an OBS checkout the apiurl is stored in `.osc/`, so plain
+`osc <cmd>` works without `-A`. (If you are driven from a Windows host instead,
+wrap every osc/git command through WSL — see `windows-wsl.md`.)
 
 ## Commands
 
@@ -106,7 +88,7 @@ event — run it under the **Monitor tool** with `persistent: true` so each
 event wakes the agent and the watch survives multi-hour builds:
 
 ```
-wsl.exe -d ubuntu-26.04 -- bash -lc '~/Desktop/package-workflow/scripts/watch-obs.sh <pkg> [pkg...]'
+scripts/watch-obs.sh <pkg> [pkg...]
 ```
 
 Events:
@@ -137,15 +119,6 @@ Notes:
   one** — its row state belongs to the previous round.
 - A package is watched on *all* repos it builds for (amd64_build and, where
   enabled, riscv64_build); `blocked` (waiting on deps) counts as in-progress.
-
-### Quoting trap: `$` dies on the wsl.exe command line
-
-Git Bash rewrites `'…'` as `"…"` when building the Windows command line, and
-wsl.exe hands that line to the WSL login shell to parse — so `$?`, `$$`, and
-`$vars` are expanded by the *outer* WSL shell before the inner command runs
-(`…; echo $?` always prints 0). Keep wsl.exe one-liners free of `$`; logic that
-needs variables belongs in a script stored inside WSL (like watch-obs.sh).
-Plain literal commands — everything else in this file — are unaffected.
 
 ## Creating a new OBS package
 
