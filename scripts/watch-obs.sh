@@ -38,7 +38,7 @@
 set -u
 
 API=https://pickaxe.oerv.ac.cn
-PRJ=home:Sakura286:ROCm_PyTorch_Submit
+PRJ=${PRJ:-home:Sakura286:ROCm_PyTorch_Submit}
 ROOT=~/Desktop/package-workflow
 POLL=${POLL:-60}
 TRIGGER_TIMEOUT=${TRIGGER_TIMEOUT:-900}
