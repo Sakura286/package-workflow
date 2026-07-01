@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-tmp-source.sh\"" },
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-commit-identity.sh\"" }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-handwritten-patch.sh\"" }
+        ]
+      }
+    ]
+  }
+}

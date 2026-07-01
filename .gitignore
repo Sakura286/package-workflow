@@ -17,8 +17,8 @@ qemu/
 
 scratchpad/
 
-# Track .claude/skills, but not transient session worktrees or local settings
+# Track .claude/skills, .claude/hooks and the shared .claude/settings.json
+# (guard hooks), but not transient session worktrees or personal local settings.
 .claude/worktrees/
 .claude/settings.local.json
-.claude/settings.json
 
