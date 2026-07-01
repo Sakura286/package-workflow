@@ -52,6 +52,9 @@ For each `PatchN:` in the spec, check it still applies to the new source:
 - Applies cleanly → keep it.
 - Fails → rebase/regenerate it against the new source, keeping the patch header and
   its upstream reference (see `homepage/docs/packaging-guidelines/patches.md`).
+  Regenerate it with a tool, never by hand — see fix-build.md Step 4 *"Producing
+  the patch file"* for the three routes (upstream artifact → `diff` → `git
+  format-patch`).
 - Already merged upstream → drop the `PatchN:` and its `%patch`/autosetup line, and
   note in the commit why it's gone.
 

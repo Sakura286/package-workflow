@@ -128,6 +128,48 @@ provenance, and survive version bumps:
 - Avoid dropping new standalone source files into the spec dir when a patch against
   the upstream tree expresses the change more honestly.
 
+### Producing the patch file — never hand-write the diff
+
+Hand-assembled unified diffs are unreliable: typed `@@ … @@` hunks routinely get
+line numbers, context, or offsets wrong (~70-80% accuracy on non-trivial files)
+and then silently fail to apply in `%prep`. **Never cobble a diff together by
+hand.** Get the patch through one of these routes, in priority order:
+
+1. **(Highest) Take the upstream artifact verbatim.** If the fix already exists
+   upstream as a commit or PR (found in Step 3), download it rather than
+   reconstruct it — GitHub serves it directly:
+
+   ```bash
+   # commit → format-patch style (a/ b/ prefixes, applies at the default -p1)
+   curl -L -o rocm-specs/SPECS/<pkg>/0001-<desc>.patch \
+       https://github.com/<org>/<repo>/commit/<sha>.patch
+   # PR (may carry several commits): .../pull/<N>.patch
+   # plain unified diff instead: swap `.patch` → `.diff`, or `gh pr diff <N>`
+   ```
+
+   Number it `0001-0999` (same-version upstream) or `1000-1999` (backport from
+   another version) per `patches.md`.
+
+2. **A diff tool** — when the source is a plain extracted tarball (not a git
+   checkout). Keep a pristine copy, edit the working copy, let `diff` emit it:
+
+   ```bash
+   cp -r src/<pkg> src/<pkg>.orig
+   # …edit files under src/<pkg>…
+   diff -Naur src/<pkg>.orig src/<pkg> > rocm-specs/SPECS/<pkg>/2001-<desc>.patch
+   ```
+
+3. **`git format-patch`** — when `src/<pkg>` is a git checkout: edit, commit, emit:
+
+   ```bash
+   git -C src/<pkg> commit -am '<desc>'
+   git -C src/<pkg> format-patch -1 --stdout > rocm-specs/SPECS/<pkg>/2001-<desc>.patch
+   ```
+
+Routes 2-3 are your own work → number `2000-2999` (openRuyi-specific). Whichever
+route, prepend the descriptive header + upstream URL and place `PatchN:` per
+`patches.md`; the declarative build auto-applies at `-p1` in `%prep`.
+
 Mirror the kinds of fixes already in this repo's history: missing `BuildRequires`,
 disabling/relaxing tests, `%files`/path corrections, linker flags for the AMDGPU
 device link, version/coupling fixes.
