@@ -99,10 +99,13 @@ hipsparse -> hipSPARSE      rocthrust -> rocThrust     rocm-origami  -> origami
 python-torch -> pytorch     python-triton -> triton    python-mistral-common -> mistral-common
 ```
 
-If no source dir exists, download it per the spec's `Source0:` into `src/`
-(ROCm github: `git clone --depth=1 --branch=rocm-<ver> <repo>`; if that tag is
-missing, note it in a comment and use the default branch; non-github: fetch the
-tarball and extract).
+If no source dir exists, download it per the spec's `Source0:` into `src/` — never
+`/tmp/` (ROCm github: `git clone --depth=1 --branch=rocm-<ver> <repo>`; if that
+tag is missing, note it in a comment and use the default branch; non-github:
+fetch the tarball into `src/` and extract it there). **Keep the tarball after
+extracting** — both `src/<pkg>.tar.gz` and the unpacked `src/<pkg>/` stay, so the
+next session can re-extract, diff against a pristine copy, or re-checksum without
+re-downloading.
 
 ---
 

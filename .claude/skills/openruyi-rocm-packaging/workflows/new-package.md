@@ -43,9 +43,10 @@ package's history if it ever existed: `git -C rocm-specs log --oneline -- SPECS/
 ## Step 2 — Get the source
 
 Fuzzy-match `src/` for the upstream source (see SKILL.md). If absent,
-download per the spec's `Source0:` into `src/` (ROCm github:
+download per the spec's `Source0:` into `src/` — never `/tmp/` (ROCm github:
 `git clone --depth=1 --branch=rocm-<ver> <repo>`; tag missing → note it and use the
-default branch; non-github → fetch the tarball and extract).
+default branch; non-github → fetch the tarball into `src/` and extract there,
+keeping the archive for reuse).
 
 Read the upstream `CMakeLists.txt` (or `pyproject.toml`) to learn which build
 options the project **actually** uses — you'll prune the spec down to those.
