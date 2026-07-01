@@ -166,9 +166,16 @@ hand.** Get the patch through one of these routes, in priority order:
    git -C src/<pkg> format-patch -1 --stdout > rocm-specs/SPECS/<pkg>/2001-<desc>.patch
    ```
 
-Routes 2-3 are your own work → number `2000-2999` (openRuyi-specific). Whichever
-route, prepend the descriptive header + upstream URL and place `PatchN:` per
-`patches.md`; the declarative build auto-applies at `-p1` in `%prep`.
+**Number by the patch's origin, not by which route produced it** (per
+`patches.md`): `0001-0999` for a same-version upstream fix, `1000-1999` for a
+CVE fix or a backport from another upstream version, `2000-2999` only for a
+genuinely openRuyi-specific change with no upstream equivalent. A rebased
+upstream/backport patch stays in the upstream ranges even when you regenerate it
+with `diff` / `git format-patch` (routes 2-3) — the tool doesn't change where
+the fix came from (the `2001-` names above are just the openRuyi-specific case).
+Whichever route, prepend the descriptive header + upstream URL and place
+`PatchN:` per `patches.md`; the declarative build auto-applies at `-p1` in
+`%prep`.
 
 Mirror the kinds of fixes already in this repo's history: missing `BuildRequires`,
 disabling/relaxing tests, `%files`/path corrections, linker flags for the AMDGPU
