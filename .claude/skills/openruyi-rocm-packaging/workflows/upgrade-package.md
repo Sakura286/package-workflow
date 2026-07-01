@@ -36,13 +36,14 @@ Work out the new `Source0:` URL for the target version, download that exact
 tarball, and update the `#!RemoteAsset:  sha256:` line above it:
 
 ```bash
-# example for a github release tarball
-curl -fL -o /tmp/<pkg>.tar.gz '<resolved Source0 URL>'
-sha256sum /tmp/<pkg>.tar.gz
+# example for a github release tarball — save to src/ for reuse
+curl -fL -o src/<pkg>.tar.gz '<resolved Source0 URL>'
+sha256sum src/<pkg>.tar.gz
 ```
 
-For PyPI packages you can read the sha256 directly off the PyPI release page. Also
-refresh the source in `src/` to the new tag so you can test patches in Step 3.
+For PyPI packages you can read the sha256 directly off the PyPI release page.
+Extract the tarball in `src/` (e.g. `tar xf src/<pkg>.tar.gz -C src/`) so you can
+test patches in Step 3.
 
 ## Step 3 — Refresh patches
 

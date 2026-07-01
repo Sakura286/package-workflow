@@ -79,7 +79,7 @@ Paths are relative to the workspace root (`package-workflow/`).
 | `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo (mainline). Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. **The local remote is named `github`** — push with `git push github main`. (`origin` now points at the same GitHub repo, so it works too; the old Gitea remote is retired and gone.) |
 | `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` | **ROCm 7.2.4 testing spec repo.** Cloned from the same GitHub repo, branch `7.2.4`. Remote `origin` points to `git@github.com:Sakura286/rocm-specs.git`. Push with `git push origin 7.2.4`. |
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
-| `src/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). |
+| `src/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). **Download tarballs to `src/` as well** (e.g. `src/<pkg>.tar.gz`), not `/tmp/` — keeps them reusable across sessions. |
 | `openRuyi/SPECS/` | The rest of the distro's specs. Reference for format and for how a dependency is packaged. |
 | `log/<pkg>-<NN>.log` | Build logs, manually sequence-numbered. Sometimes an arch/status suffix (`amdsmi-04-riscv64.log`, `python-torch-02-success.log`). |
 | `home:Sakura286:ROCm_PyTorch_Submit/` | OBS local checkout for mainline (one subdir per OBS package, each with a `_service`). |
