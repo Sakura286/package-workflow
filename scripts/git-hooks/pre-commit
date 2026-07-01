@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Cross-agent git pre-commit guard: the openRuyi spec-repo clones must commit
+# as CHEN Xuan <chenxuan@iscas.ac.cn>. Fires for ANY tool (Claude Code, mimo
+# code, opencode, codebuddy, a human, …) that runs `git commit`, because it is
+# enforced by git itself, not by an agent.
+#
+# Installed by pointing each spec repo's core.hooksPath at scripts/git-hooks/
+# (see scripts/install-git-hooks.sh). Bypassable with `git commit --no-verify`;
+# the unbypassable backstop would be a server-side check (not configured).
+set -u
+
+EXPECT="chenxuan@iscas.ac.cn"
+
+# Safety: only enforce inside the spec-repo clones, so an accidental
+# core.hooksPath on another repo (e.g. package-workflow, which commits as
+# Sakura286) is a no-op.
+top=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+case "$(basename "$top")" in
+    rocm-specs|rocm-specs-7.2.4|openRuyi) ;;
+    *) exit 0 ;;
+esac
+
+# `git var` reflects the identity git will actually record (config + env),
+# so this also catches GIT_AUTHOR_EMAIL / GIT_COMMITTER_EMAIL overrides.
+email_of() { git var "$1" 2>/dev/null | sed -n 's/.*<\(.*\)>.*/\1/p'; }
+author=$(email_of GIT_AUTHOR_IDENT)
+committer=$(email_of GIT_COMMITTER_IDENT)
+
+bad=""
+[[ $author    != "$EXPECT" ]] && bad+="author=<${author:-unset}> "
+[[ $committer != "$EXPECT" ]] && bad+="committer=<${committer:-unset}> "
+
+if [[ -n $bad ]]; then
+    {
+        echo "pre-commit: refusing commit in $(basename "$top")."
+        echo "  This spec repo must commit as CHEN Xuan <$EXPECT>, but got: $bad"
+        echo "  Fix identity, then retry:"
+        echo "    git -C \"$top\" config user.name  \"CHEN Xuan\""
+        echo "    git -C \"$top\" config user.email $EXPECT"
+    } >&2
+    exit 1
+fi
+exit 0
