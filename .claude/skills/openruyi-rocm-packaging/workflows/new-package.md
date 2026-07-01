@@ -24,18 +24,10 @@ git clone https://src.fedoraproject.org/rpms/<pkg>.git
 ```
 
 - If Fedora **has** the package, `rpms/<pkg>/<pkg>.spec` is your base to adapt.
-- If Fedora **doesn't** have it (clone 404s), try the openRuyi draft-spec server
-  `nekorouter` as a fallback — it sometimes carries a draft ROCm spec:
-
-  ```bash
-  git clone ssh://git@git.openruyi.cn:54865/nekorouter/<pkg>.git /tmp/<pkg>-draft
-  ```
-
-  If a draft exists, use it as the base (drop its `.git`; don't commit it as-is).
-- If neither source has it, write from scratch: use the information the user
-  provides plus a sibling spec in `rocm-specs` (or `rocm-specs-7.2.4`) as the format
-  template. Good templates: `rccl`, `rocrand`, `hipsparse` (cmake); `python-triton`
-  (pyproject with a bundled build).
+- If Fedora **doesn't** have it (clone 404s), write from scratch: use the
+  information the user provides plus a sibling spec in `rocm-specs` (or
+  `rocm-specs-7.2.4`) as the format template. Good templates: `rccl`, `rocrand`,
+  `hipsparse` (cmake); `python-triton` (pyproject with a bundled build).
 
 Also look at how `rocm-specs` already handles related packages and at this
 package's history if it ever existed: `git -C rocm-specs log --oneline -- SPECS/<pkg>`.
