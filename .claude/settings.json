@@ -14,6 +14,27 @@
           { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-handwritten-patch.sh\"" }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-patch-applies.sh\"" }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-patch-applies.sh\"" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/verify-turn.sh\"" }
+        ]
+      }
     ]
   }
 }
