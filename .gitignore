@@ -13,6 +13,7 @@ binaries/
 rocm-specs-7.2.4/
 qemu/
 .mimocode/
+.codebuddy/
 
 scratchpad/
 
