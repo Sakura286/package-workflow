@@ -175,6 +175,13 @@ Don't poll in the foreground; arm the build watcher (Monitor tool,
 scripts/watch-obs.sh <pkg>
 ```
 
+For a **ROCm 7.2.4** build the watcher defaults to the mainline project and will
+falsely `TRIGGER-TIMEOUT` — override the project and expected commit:
+
+```
+PRJ=home:Sakura286:ROCm_724 EXPECT_COMMIT=$(git -C rocm-specs-7.2.4 rev-parse HEAD) scripts/watch-obs.sh <pkg>
+```
+
 - `RESULT <pkg> … failed/unresolvable/broken` → loop back to Step 1: fetch the
   fresh log yourself, fix, push — then TaskStop the old watcher and arm a new one.
 - `RESULT … succeeded` on every arch / `DONE 0 failed` → report success

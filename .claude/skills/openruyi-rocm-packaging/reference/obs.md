@@ -91,6 +91,20 @@ event wakes the agent and the watch survives multi-hour builds:
 scripts/watch-obs.sh <pkg> [pkg...]
 ```
 
+**Mainline vs. ROCm 7.2.4 — the script defaults to the *mainline* project.**
+`PRJ` defaults to `home:Sakura286:ROCm_PyTorch_Submit` and `EXPECT_COMMIT` to
+the local **`rocm-specs`** (mainline) HEAD. Running it plainly for a 7.2.4 build
+silently watches the *wrong* project and waits for a commit that only exists on
+the mainline branch → endless `TRIGGER-TIMEOUT` even though the real `ROCm_724`
+build is fine (the re-trigger hint it prints also points at the wrong project).
+For a 7.2.4 build, override both:
+
+```
+PRJ=home:Sakura286:ROCm_724 \
+  EXPECT_COMMIT=$(git -C rocm-specs-7.2.4 rev-parse HEAD) \
+  scripts/watch-obs.sh <pkg>
+```
+
 Events:
 
 ```
@@ -105,10 +119,13 @@ DONE <n> failed / <m> rows final    all rows final; watcher exits
 Final codes: `succeeded | failed | unresolvable | broken | excluded | disabled`.
 Exit 0 when nothing failed, 1 otherwise.
 
-Env knobs: `POLL` (status poll seconds, default 60), `TRIGGER_TIMEOUT`
-(default 900), `EXPECT_COMMIT` (default: current rocm-specs HEAD),
-`SKIP_TRIGGER_CHECK=1` (watch the current round as-is — ad-hoc status watching,
-or after a manual `service rr` of an old commit).
+Env knobs: `PRJ` (OBS project, default `home:Sakura286:ROCm_PyTorch_Submit`
+mainline — set `home:Sakura286:ROCm_724` for 7.2.4), `POLL` (status poll
+seconds, default 60), `TRIGGER_TIMEOUT` (default 900), `EXPECT_COMMIT` (default:
+current **mainline** `rocm-specs` HEAD — for 7.2.4 pass
+`$(git -C rocm-specs-7.2.4 rev-parse HEAD)`), `SKIP_TRIGGER_CHECK=1` (watch the
+current round as-is — ad-hoc status watching, or after a manual `service rr` of
+an old commit).
 
 Notes:
 
