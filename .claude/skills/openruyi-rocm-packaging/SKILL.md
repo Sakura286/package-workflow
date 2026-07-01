@@ -268,8 +268,11 @@ scripts/watch-obs.sh <pkg> [pkg...]
 ```
 
 The script first confirms the trigger landed (expanded sources pick up the new
-commit), then polls every repo/arch to a final state. Each stdout line is an
-event that wakes you (full reference: `reference/obs.md`):
+commit), then watches the x86_64 gate row (`amd64_build/x86_64`) to a final
+state. **Only the x86_64 gate is watched by default** — for speed, riscv64 and
+other arches are not tracked, so a result there (pass *or* fail) ends the round.
+Pass `GATE=none` to watch every repo/arch instead. Each stdout line is an event
+that wakes you (full reference: `reference/obs.md`):
 
 | Event | React |
 |---|---|

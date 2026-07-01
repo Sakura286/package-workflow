@@ -79,11 +79,12 @@ osc -A https://pickaxe.oerv.ac.cn rebuildpac home:Sakura286:ROCm_724 <pkg> amd64
 ## Watching a build round: `scripts/watch-obs.sh`
 
 `scripts/watch-obs.sh <pkg> [pkg...]` (bash, runs inside WSL) waits for the
-pushed commit to be picked up by the OBS service, then watches each package in
-**two stages**: first only the gate row `amd64_build/x86_64` (≈10× faster than
-riscv64) — a failure there ends that package's watch immediately so the fix
-loop starts without waiting for riscv64 — and only after the gate is green
-does it watch the remaining repos/arches to a final state. One stdout line per
+pushed commit to be picked up by the OBS service, then watches only the gate
+row `amd64_build/x86_64` (≈10× faster than riscv64) to a final state. A result
+there — pass *or* fail — ends the round; **for speed, riscv64 and other arches
+are not watched by default**, so the fix loop starts without waiting for the
+slow arch. Pass `GATE=none` to watch every repo/arch to a final state instead.
+One stdout line per
 event — run it under the **Monitor tool** with `persistent: true` so each
 event wakes the agent and the watch survives multi-hour builds:
 
@@ -123,7 +124,9 @@ Env knobs: `PRJ` (OBS project, default `home:Sakura286:ROCm_PyTorch_Submit`
 mainline — set `home:Sakura286:ROCm_724` for 7.2.4), `POLL` (status poll
 seconds, default 60), `TRIGGER_TIMEOUT` (default 900), `EXPECT_COMMIT` (default:
 current **mainline** `rocm-specs` HEAD — for 7.2.4 pass
-`$(git -C rocm-specs-7.2.4 rev-parse HEAD)`), `SKIP_TRIGGER_CHECK=1` (watch the
+`$(git -C rocm-specs-7.2.4 rev-parse HEAD)`), `GATE` (gate row, default
+`amd64_build/x86_64`; set `GATE=none` to watch every repo/arch),
+`SKIP_TRIGGER_CHECK=1` (watch the
 current round as-is — ad-hoc status watching, or after a manual `service rr` of
 an old commit).
 
@@ -134,8 +137,9 @@ Notes:
   the watch early.
 - After pushing a fix mid-round, **TaskStop the old watcher and arm a fresh
   one** — its row state belongs to the previous round.
-- A package is watched on *all* repos it builds for (amd64_build and, where
-  enabled, riscv64_build); `blocked` (waiting on deps) counts as in-progress.
+- By default only the `amd64_build/x86_64` gate is watched; `GATE=none` watches
+  *all* repos the package builds for (amd64_build and, where enabled,
+  riscv64_build). `blocked` (waiting on deps) counts as in-progress.
 
 ## Creating a new OBS package
 
