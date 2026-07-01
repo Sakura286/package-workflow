@@ -50,7 +50,7 @@ osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build 
 **Trigger a rebuild.** `obs_scm` never polls the remote repo and this OBS has no
 webhook; a trigger happens one of three ways:
 
-1. **Automatic (the normal path):** Push to the GitHub remote (via WSL).
+1. **Automatic (the normal path):** Push to the GitHub remote.
    The repo's GitHub Actions workflow (`.github/workflows/trigger-obs.yml`) diffs the
    push and, for every changed `SPECS/<pkg>/`, POSTs the OBS trigger API:
    `POST https://pickaxe.oerv.ac.cn/trigger/runservice?project=…&package=…` with
@@ -78,7 +78,7 @@ osc -A https://pickaxe.oerv.ac.cn rebuildpac home:Sakura286:ROCm_724 <pkg> amd64
 
 ## Watching a build round: `scripts/watch-obs.sh`
 
-`scripts/watch-obs.sh <pkg> [pkg...]` (bash, runs inside WSL) waits for the
+`scripts/watch-obs.sh <pkg> [pkg...]` waits for the
 pushed commit to be picked up by the OBS service, then watches only the gate
 row `amd64_build/x86_64` (≈10× faster than riscv64) to a final state. A result
 there — pass *or* fail — ends the round; **for speed, riscv64 and other arches
