@@ -58,6 +58,12 @@ Cross-reference:
   in the code/build, and
 - earlier logs in `log/` for the same package to see what changed.
 
+Keep these searches **scoped to the workspace dirs** (`rocm-specs*`, `openRuyi`,
+`src`, `log`) and prefer the Grep tool — never `grep -r` from `/`. Whatever you
+need (a macro definition, how another spec sets an option) lives in the checkout;
+a filesystem-root scan is slow, gets **auto-backgrounded**, and lingers as a
+stale job that fires a confusing late "completed".
+
 ## Step 3 — Research the fix (and cite it)
 
 > **HARD RULE: Do NOT write any code, patch, or sed fix before completing
