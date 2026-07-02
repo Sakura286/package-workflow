@@ -259,8 +259,8 @@ After a build succeeds, verify the package in a real openRuyi environment
 
 For x86_64 (QEMU VM):
 1. Check if VM is running (`pgrep -c qemu-system`), prompt user to start if not
-2. Download the RPM from OBS: `osc api "/build/.../<pkg>/<rpm>" > /tmp/<rpm>`
-3. SCP into VM: `scp -P 2222 /tmp/<rpm> openruyi@localhost:/tmp/`
+2. Download the RPM from OBS: `osc api "/build/.../<pkg>/<rpm>" > tmp/<rpm>`
+3. SCP into VM: `scp -P 2222 tmp/<rpm> openruyi@localhost:/tmp/`
 4. Install: `ssh ... "echo openruyi | sudo -S dnf install -y /tmp/<rpm>"`
 5. Verify: `rpm -q`, Python import, binary test
 6. **Cleanup:** `ssh ... "echo openruyi | sudo -S dnf remove -y <pkg> && echo openruyi | sudo -S dnf autoremove -y"`

@@ -102,7 +102,7 @@ docker pull ghcr.io/openruyi-project/creek:latest
 
 1. **Mount RPM directory and install:**
    ```
-   docker run --rm --platform linux/riscv64 -v /tmp/obs-rpms:/mnt/rpms \
+   docker run --rm --platform linux/riscv64 -v "$(pwd)/tmp/obs-rpms:/mnt/rpms" \
      ghcr.io/openruyi-project/creek:latest sh -c 'rpm -ivh /mnt/rpms/<pkg>.rpm'
    ```
 

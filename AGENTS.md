@@ -16,6 +16,13 @@ skills teach; they live here so no agent has to load a skill to know them.
 - **Sources live in `src/`, never `/tmp`.** Clone or download upstream sources
   and tarballs into `src/` (grep-able and reused across sessions); keep the
   tarball after extracting. Never fetch or extract source into `/tmp`.
+- **Scratch files live in `tmp/`, never the host `/tmp`.** Any transient file an
+  agent creates — build/query scripts, RPMs pulled from OBS, intermediate
+  outputs, logs — goes under the workspace-local `tmp/` (gitignored, kept across
+  sessions), not the host `/tmp`, which parallel agents share and clobber.
+  (`scratchpad/` is Claude Code's own auto-scratch; everything else goes in
+  `tmp/`.) Paths *inside* the QEMU VM such as `openruyi@localhost:/tmp/` are the
+  guest's own filesystem and stay as-is.
 - **Patches must be tool-generated.** Never hand-write a unified diff — download
   the upstream `.patch`, or use `diff -Naur`, or `git format-patch`; then edit
   only to add the header. Number by origin: `0001-0999` same-version upstream,
@@ -23,8 +30,10 @@ skills teach; they live here so no agent has to load a skill to know them.
 - **Run commands from the workspace root** (`package-workflow/`); all paths are
   relative to it.
 
-Claude Code additionally enforces the first three at tool-call time via
-`.claude/settings.json` hooks; other agents should honor them by convention.
+Claude Code additionally enforces commit identity, the sources rule, and
+patches at tool-call time via `.claude/settings.json` hooks; the `tmp/` scratch
+and workspace-root rules are convention only (the sources hook blocks *source*
+into `/tmp`, not scratch). Other agents should honor all of them by convention.
 
 ## Working principles (all agents)
 
