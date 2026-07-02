@@ -29,11 +29,15 @@ skills teach; they live here so no agent has to load a skill to know them.
   `1000-1999` backport from another version, `2000-2999` openRuyi-specific.
 - **Run commands from the workspace root** (`package-workflow/`); all paths are
   relative to it.
+- **`gh` fetches, it doesn't publish.** Use the `gh` CLI only to *read* — pull
+  down a PR, issue, source, or CI status. Never proactively open a PR or issue
+  (or push a branch to raise one); deliver changes as commits and let the user
+  open one if they want it.
 
 Claude Code additionally enforces commit identity, the sources rule, and
-patches at tool-call time via `.claude/settings.json` hooks; the `tmp/` scratch
-and workspace-root rules are convention only (the sources hook blocks *source*
-into `/tmp`, not scratch). Other agents should honor all of them by convention.
+patches at tool-call time via `.claude/settings.json` hooks; the remaining rules
+are convention only (the sources hook blocks *source* into `/tmp`, not scratch).
+Other agents should honor all of them by convention.
 
 ## Working principles (all agents)
 
