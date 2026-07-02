@@ -18,6 +18,28 @@ Coordinates for the OBS instance used by this stack:
 | Local checkout | `home:Sakura286:ROCm_724/` (one subdir per package) |
 | Spec repo | `rocm-specs-7.2.4` (branch `7.2.4`) |
 
+## `openruyi-obs/` — the official distro's OBS project (read-only reference)
+
+Same instance (`https://pickaxe.oerv.ac.cn`), **different project**: `openruyi`
+is the official openRuyi distribution's own OBS project — every package the
+distro ships, with its real `_service`, spec, sources, and `.changes`. It is
+checked out locally at `openruyi-obs/` (one subdir per package; the apiurl and
+project name live in `openruyi-obs/.osc/`).
+
+- **Read-only to us.** This is upstream's project, not ours — **never** `osc ci`
+  / commit / push anything here. It is a *reference*: how the shipping distro
+  actually packages a thing (naming, `_service`, build deps, patch layout), and
+  a place to cross-check versions and see how a dependency of ours is built. The
+  writable ROCm projects above (`home:Sakura286:ROCm_PyTorch_Submit`,
+  `home:Sakura286:ROCm_724`) are the only ones you push to.
+- **Kept fresh automatically.** A user cron job runs `scripts/sync-openruyi-obs.sh`
+  at 11:00 Asia/Shanghai every day; it does `osc up` in `openruyi-obs/` and
+  appends a timestamped line to `log/openruyi-obs-sync.log`. To refresh on
+  demand, run the script, or just `cd openruyi-obs && osc up`.
+- **Not part of this git repo.** `openruyi-obs/` is in `.gitignore` — it is a
+  working checkout, not tracked here. (Distinct from `openRuyi/SPECS/`, which is
+  a git checkout of the distro's spec sources used the same way, for reference.)
+
 ## Running osc
 
 `osc` and `git` are on PATH; run every command **directly from the workspace root**

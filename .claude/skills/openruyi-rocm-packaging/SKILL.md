@@ -79,6 +79,7 @@ Paths are relative to the workspace root (`package-workflow/`).
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
 | `src/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). **Download tarballs to `src/` as well** (e.g. `src/<pkg>.tar.gz`), not `/tmp/` — keeps them reusable across sessions. |
 | `openRuyi/SPECS/` | The rest of the distro's specs. Reference for format and for how a dependency is packaged. |
+| `openruyi-obs/` | **Read-only** local `osc` checkout of the official openRuyi OBS project `openruyi` (same instance as ours). Reference for how the shipping distro packages a thing; **never commit/push here**. Auto-synced daily via `scripts/sync-openruyi-obs.sh` (cron). See `reference/obs.md`. |
 | `log/<pkg>-<NN>.log` | Build logs, manually sequence-numbered. Sometimes an arch/status suffix (`amdsmi-04-riscv64.log`, `python-torch-02-success.log`). |
 | `home:Sakura286:ROCm_PyTorch_Submit/` | OBS local checkout for mainline (one subdir per OBS package, each with a `_service`). |
 | `home:Sakura286:ROCm_724/` | OBS local checkout for ROCm 7.2.4 testing (one subdir per OBS package, each with a `_service`). |
