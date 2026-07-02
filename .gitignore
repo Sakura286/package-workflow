@@ -6,6 +6,7 @@ orig_code/
 src/
 homepage
 home:Sakura286*
+openruyi-obs/
 tmp/
 openRuyi-rocm-7.2/
 rpms/
@@ -14,6 +15,7 @@ rocm-specs-7.2.4/
 qemu/
 .mimocode/
 .codebuddy/
+.codex/
 
 scratchpad/
 
