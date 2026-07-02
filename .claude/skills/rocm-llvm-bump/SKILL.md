@@ -20,8 +20,7 @@ description: >-
 
 ## Language convention
 
-Think and reason in English. Reply to the user in Chinese. Technical terms,
-code, paths, and error strings stay in English — do not translate them.
+Follow the repo-wide **Language** rule in `AGENTS.md`.
 
 ---
 

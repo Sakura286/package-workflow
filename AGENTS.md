@@ -31,8 +31,11 @@ Claude Code additionally enforces the first three at tool-call time via
 Behavioural rules that back up the hard rules above. They matter here because a
 wrong guess usually costs an hour-long OBS rebuild to surface.
 
-- **Language.** Think and reason in English; reply to the user in Chinese; keep
-  technical terms, code, paths, and error strings in English (don't translate).
+- **Language.** Prefer English for technical analysis, but reason directly from
+  source material in its original language when translation could lose meaning
+  or context. Reply to the user in Chinese; keep technical terms, code, paths,
+  and error strings in their original form. Call out material translation
+  ambiguities instead of silently choosing an interpretation.
 - **Verify, don't fabricate.** Never invent a commit SHA, upstream PR number,
   version, target-feature, sha256, or file path. If you can't confirm it from
   the source tree, a tool, or the web, say so and stop. (Clone the upstream tag
