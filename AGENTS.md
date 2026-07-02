@@ -62,3 +62,12 @@ your task matches a skill by reading its frontmatter `description`:
 
 **To load a skill:** read `.claude/skills/<skill-name>/SKILL.md` in full, then
 follow the workflow it describes.
+
+## Deferred work (`todo/`)
+
+`todo/` holds one Markdown file per **known-but-deferred** issue — a real bug or
+task we consciously chose not to fix in the moment, written up so a later agent
+(or human) can pick it up cold. Each file states the symptom, what has already
+been ruled out, an exact reproduction, and the next steps to try. Before
+starting related work, skim `todo/` for an existing writeup; when you defer
+something non-trivial, add one there (and delete it once resolved).
