@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Cross-agent git pre-commit guard: the openRuyi spec-repo clones must commit
-# as CHEN Xuan <chenxuan@iscas.ac.cn>. Fires for ANY tool (Claude Code, mimo
-# code, opencode, codebuddy, a human, …) that runs `git commit`, because it is
-# enforced by git itself, not by an agent.
+# Cross-agent git pre-commit guard for the openRuyi spec-repo clones. It first
+# enforces the required commit identity, then runs the repository's pre-commit
+# checks when a .pre-commit-config.yaml is present. Fires for ANY tool (Claude
+# Code, mimo code, opencode, codebuddy, a human, …) that runs `git commit`,
+# because it is enforced by git itself, not by an agent.
 #
 # Installed by pointing each spec repo's core.hooksPath at scripts/git-hooks/
 # (see scripts/install-git-hooks.sh). Bypassable with `git commit --no-verify`;
@@ -40,4 +41,16 @@ if [[ -n $bad ]]; then
     } >&2
     exit 1
 fi
-exit 0
+
+config="$top/.pre-commit-config.yaml"
+[[ -f $config ]] || exit 0
+
+if ! command -v pre-commit >/dev/null 2>&1; then
+    {
+        echo "pre-commit: command not found; refusing commit in $(basename "$top")."
+        echo "  Install pre-commit, then retry the commit."
+    } >&2
+    exit 1
+fi
+
+exec pre-commit run --config "$config" --hook-stage pre-commit
