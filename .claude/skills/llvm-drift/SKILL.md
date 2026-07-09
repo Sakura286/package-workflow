@@ -1,5 +1,5 @@
 ---
-name: rocm-llvm-bump
+name: llvm-drift
 description: >-
   Playbook for upgrading a ROCm package on openRuyi when a new version — or being
   built against a newer system llvm — causes LLVM/clang version-drift build

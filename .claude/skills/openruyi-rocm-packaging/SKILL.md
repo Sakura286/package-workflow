@@ -48,13 +48,11 @@ PATH), every osc/git command must be wrapped through WSL — the wrapper, the
 | Bump an existing package to a new version | `workflows/upgrade-package.md` |
 | Fix a failing build from the latest log | `workflows/fix-build.md` |
 
-> **LLVM/clang version drift has a companion skill — `rocm-llvm-bump`.** Reach for
-> it alongside `fix-build.md` whenever a ROCm build fails with the signature of the
-> package meeting a newer LLVM than it was written for: a cmake "imported target …
-> references … but this file does not exist" (missing `-static` libs), a device-libs
-> "'__builtin_amdgcn_X' needs target feature Y", a relocated/renamed clang
-> header/namespace/method in comgr, or a post-bump `%files` "File not found" /
-> "Installed (but unpackaged)". It catalogs these by build phase, with fixes.
+> **LLVM/clang version drift → companion skill `llvm-drift`.** If a failure smells
+> like the package meeting a newer LLVM than it was written for (missing `-static`
+> libs, gated AMDGPU builtins, relocated clang headers, post-bump `%files`
+> mismatch), read that skill alongside `fix-build.md` — its frontmatter carries the
+> full symptom catalog, its body the fixes by build phase.
 
 All three end the same way: commit to the spec repo and trigger the OBS build.
 The conventions below apply to every workflow — read them first, then open the
@@ -74,7 +72,7 @@ Paths are relative to the workspace root (`package-workflow/`).
 
 | Path | What it is |
 |---|---|
-| `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo (mainline). Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. **The local remote is named `github`** — push with `git push github main`. (`origin` now points at the same GitHub repo, so it works too; the old Gitea remote is retired and gone.) |
+| `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo (mainline). Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. Remotes `github` and `origin` both point there; push with `git push github main`. |
 | `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` | **ROCm 7.2.4 testing spec repo.** Cloned from the same GitHub repo, branch `7.2.4`. Remote `origin` points to `git@github.com:Sakura286/rocm-specs.git`. Push with `git push origin 7.2.4`. |
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
 | `src/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). **Download tarballs to `src/` as well** (e.g. `src/<pkg>.tar.gz`), not `/tmp/` — keeps them reusable across sessions. |
@@ -258,37 +256,20 @@ osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build 
 
 **After triggering — arm the watcher, never poll in the foreground.** Builds
 take minutes to hours, so don't sit in a status loop. Instead, once the push (or
-`osc ci`) went through, start `scripts/watch-obs.sh` under the **Monitor tool**
-with `persistent: true` (builds outlive any timeout), naming the package(s) just
-pushed:
+`osc ci`) went through, run `scripts/watch-obs.sh <pkg> [pkg...]` under the
+**Monitor tool** with `persistent: true` (builds outlive any timeout). It
+confirms the trigger landed, then watches the `amd64_build/x86_64` gate row to a
+final state; each stdout line is an event that wakes you. **For a ROCm 7.2.4
+build the mainline defaults are wrong** — set `PRJ=home:Sakura286:ROCm_724` and
+`EXPECT_COMMIT` to the 7.2.4 HEAD, or the watcher silently watches the wrong
+project and emits a bogus `TRIGGER-TIMEOUT`. The full reference — events, env
+knobs, gate behavior, the exact 7.2.4 invocation — is `reference/obs.md`.
 
-```
-scripts/watch-obs.sh <pkg> [pkg...]
-```
-
-The script first confirms the trigger landed (expanded sources pick up the new
-commit), then watches the x86_64 gate row (`amd64_build/x86_64`) to a final
-state. **Only the x86_64 gate is watched by default** — for speed, riscv64 and
-other arches are not tracked, so a result there (pass *or* fail) ends the round.
-Pass `GATE=none` to watch every repo/arch instead. Each stdout line is an event
-that wakes you (full reference: `reference/obs.md`):
-
-| Event | React |
-|---|---|
-| `TRIGGERED <pkg> <hash>` | nothing — trigger confirmed |
-| `TRIGGER-TIMEOUT <pkg> …` | Actions run lost: manual `osc service rr`, then restart the watcher |
-| `RESULT <pkg> <repo>/<arch> failed/unresolvable/broken` | fetch the log, run `workflows/fix-build.md` |
-| `RESULT … succeeded` | nothing |
-| `DONE <n> failed / <m> rows final` | report the round's outcome to the user |
-
-**On a `RESULT … failed`**, hand to `workflows/fix-build.md` — it runs the
-autonomous fix loop (fix → push → TaskStop the old watcher and arm a fresh one)
-and defines when to stop and ask the user. PushNotification the user when a round
-goes all-green.
-
-The watcher lives only as long as the Claude Code session — if the user is
-about to close it mid-build, say so. The user may still hand back a saved log
-manually at any time; that path keeps working regardless of the watcher.
+On a `RESULT … failed`, hand to `workflows/fix-build.md` — it runs the
+autonomous fix loop and defines when to stop and ask the user. PushNotification
+the user when a round goes all-green. The watcher lives only as long as the
+Claude Code session — if the user is about to close it mid-build, say so. A log
+handed back manually by the user keeps working regardless of the watcher.
 
 ---
 

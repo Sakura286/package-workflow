@@ -69,7 +69,7 @@ A new version may change what gets installed or how it builds. Check for:
 - **A newer LLVM.** ROCm builds against the system `llvmNN` (often newer than the
   snapshot ROCm bundles), so a bump can surface LLVM/clang drift — missing
   `-static` imported targets, gated AMDGPU builtins, relocated clang headers. When
-  that happens, use the `rocm-llvm-bump` skill.
+  that happens, use the `llvm-drift` skill.
 - **Cross-package version coupling.** Some packages pin a sibling that must move in
   lockstep — e.g. `python-triton` pins `%global llvm_commit` to the value in the new
   tag's `cmake/llvm-hash.txt`, and `python-torch` is coupled to a specific `magma`.

@@ -44,12 +44,11 @@ the whole log for the failure. Useful patterns: `error:`, `Error`, `FAILED`,
 `Could NOT find`, `ninja: build stopped`. Distinguish the first real error from the
 cascade of follow-on errors it triggers.
 
-If the error looks like the package meeting a **newer LLVM** than it was written for
-— a cmake "imported target … references … but this file does not exist", a
-device-libs "'__builtin_amdgcn_X' needs target feature Y", a relocated clang
-header/namespace/method in comgr, or a post-bump `%files` mismatch — switch to the
-**`rocm-llvm-bump`** skill, which catalogs these by build phase with upstream-sourced
-fixes.
+If the error smells like the package meeting a **newer LLVM** than it was
+written for (missing `-static` libs, gated AMDGPU builtins, relocated clang
+headers, post-bump `%files` mismatch), switch to the **`llvm-drift`** skill —
+its frontmatter carries the full symptom catalog, its body the fixes by build
+phase.
 
 Cross-reference:
 - the spec at `rocm-specs/SPECS/<pkg>/<pkg>.spec` (or `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec`
@@ -66,26 +65,34 @@ stale job that fires a confusing late "completed".
 
 ## Step 3 — Research the fix (and cite it)
 
-> **HARD RULE: Do NOT write any code, patch, or sed fix before completing
-> this step. If you have not searched upstream for an existing fix, you are
-> not ready to write one.**
+> **HARD RULE — scoped by what the fix touches:**
 >
-> This applies to spec files (`SPECS/<pkg>/<pkg>.spec` and associated
-> patches). It does NOT apply to OBS operations (triggering builds,
-> fetching logs, etc.).
+> - A fix that **touches upstream source** (a patch, a sed on the source tree,
+>   an API adaptation): do NOT write it before completing this step. If you
+>   have not searched upstream for an existing fix, you are not ready to
+>   write one.
+> - A **packaging-level fix** (an added `BuildRequires`, a `%files`/path
+>   correction, a flipped `BuildOption`): the authority is the build log, the
+>   tarball, and this repo's history — upstream search is recommended when the
+>   cause is unclear, not mandatory.
+> - OBS operations (triggering builds, fetching logs, etc.) are never gated
+>   on this step.
 
-Investigate online — this is **mandatory, not optional**. Search the upstream
-project's GitHub issues, PRs, and commits for the error string or symptom.
-Also check other distros (Fedora, Arch, Gentoo) and this repo's history.
+For source-level fixes, investigating online is **mandatory, not optional**.
+Search the upstream project's GitHub issues, PRs, and commits for the error
+string or symptom. Also check other distros (Fedora, Arch, Gentoo) and this
+repo's history.
 
 ### Search strategy (in order)
 
 1. **Upstream GitHub issues/PRs** — search the error message or symptom on the
-   upstream repo. Use `websearch` or `webfetch` on
-   `https://github.com/<org>/<repo>/issues?q=<keywords>` and
-   `https://github.com/<org>/<repo>/pulls?q=<keywords>`.
+   upstream repo. Prefer the `gh` CLI (read-only use is sanctioned):
+   `gh search issues --repo <org>/<repo> "<keywords>"`, likewise
+   `gh search prs`, then `gh issue view` / `gh pr view` / `gh pr diff` for
+   detail; WebSearch works too. Don't WebFetch GitHub's HTML search pages —
+   they render client-side and come back empty.
 2. **Upstream commits** — check if a fix was merged but not yet released:
-   `https://github.com/<org>/<repo>/commits/<branch>` or
+   `gh api "repos/<org>/<repo>/commits?path=<file>"`, or WebFetch a specific
    `https://github.com/<org>/<repo>/commit/<hash>`.
 3. **Other distros** — search Fedora bugzilla, Arch AUR/GitLab, Gentoo
    Bugzilla for the same error.
@@ -231,11 +238,8 @@ scripts/watch-obs.sh <pkg>
 ```
 
 For a **ROCm 7.2.4** build the watcher defaults to the mainline project and will
-falsely `TRIGGER-TIMEOUT` — override the project and expected commit:
-
-```
-PRJ=home:Sakura286:ROCm_724 EXPECT_COMMIT=$(git -C rocm-specs-7.2.4 rev-parse HEAD) scripts/watch-obs.sh <pkg>
-```
+falsely `TRIGGER-TIMEOUT` — set `PRJ=home:Sakura286:ROCm_724` and
+`EXPECT_COMMIT` to the 7.2.4 HEAD (exact invocation: `reference/obs.md`).
 
 - `RESULT <pkg> … failed/unresolvable/broken` → loop back to Step 1: fetch the
   fresh log yourself, fix, push — then TaskStop the old watcher and arm a new one.
@@ -248,7 +252,7 @@ PRJ=home:Sakura286:ROCm_724 EXPECT_COMMIT=$(git -C rocm-specs-7.2.4 rev-parse HE
 attempt when the same root error survives a fix, when ~3 attempts haven't moved
 the package, when the fix requires a judgment call (version pins, disabling
 tests/features beyond repo precedent, or an open-ended source port across an
-LLVM/clang version bump — see the `rocm-llvm-bump` skill), or when the
+LLVM/clang version bump — see the `llvm-drift` skill), or when the
 failure is OBS infrastructure rather than the package. A log handed over by the
 user mid-round always takes priority over watcher events.
 
@@ -258,7 +262,8 @@ After a build succeeds, verify the package in a real openRuyi environment
 **only when the user requests it**. See `reference/qemu-testing.md` for details.
 
 For x86_64 (QEMU VM):
-1. Check if VM is running (`pgrep -c qemu-system`), prompt user to start if not
+1. Check if VM is running (`pgrep -c qemu-system`); if not, prompt the user to
+   start it and wait — never start it yourself
 2. Download the RPM from OBS: `osc api "/build/.../<pkg>/<rpm>" > tmp/<rpm>`
 3. SCP into VM: `scp -P 2222 tmp/<rpm> openruyi@localhost:/tmp/`
 4. Install: `ssh ... "echo openruyi | sudo -S dnf install -y /tmp/<rpm>"`

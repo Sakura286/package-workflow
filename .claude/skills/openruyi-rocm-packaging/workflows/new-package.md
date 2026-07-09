@@ -20,7 +20,7 @@ Fedora is the starting point. Clone its spec into `rpms/` (reference only — ke
 its `.git`, never commit it into `rocm-specs` or `rocm-specs-7.2.4`):
 
 ```bash
-git clone https://src.fedoraproject.org/rpms/<pkg>.git
+git clone https://src.fedoraproject.org/rpms/<pkg>.git rpms/<pkg>
 ```
 
 - If Fedora **has** the package, `rpms/<pkg>/<pkg>.spec` is your base to adapt.

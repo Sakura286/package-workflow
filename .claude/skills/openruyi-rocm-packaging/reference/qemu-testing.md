@@ -20,15 +20,15 @@ SCP:  scp -P 2222 <file> openruyi@localhost:/tmp/
 sudo: echo openruyi | sudo -S <cmd>
 ```
 
-**VM startup:** The user starts the VM externally. If SSH fails, the Agent
-should check whether `qemu-system-x86_64` is running and attempt to start it:
+**VM startup:** The user starts the VM externally — **never start it yourself**.
+If SSH fails, check whether it is running:
 
 ```bash
 pgrep -c qemu-system || echo "VM not running"
 ```
 
-If the VM is not running, prompt the user to start it, or start it via
-`qemu/openruyi-virt_x86-64/start_vm.sh`.
+If the VM is not running, prompt the user to start it
+(`qemu/openruyi-virt_x86-64/start_vm.sh`) and wait.
 
 ### OBS Repository (pre-configured)
 

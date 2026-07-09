@@ -10,9 +10,12 @@ skills teach; they live here so no agent has to load a skill to know them.
 
 - **Commit identity.** The spec repos — `rocm-specs`, `rocm-specs-7.2.4`,
   `openRuyi` — must commit as **`CHEN Xuan <chenxuan@iscas.ac.cn>`**, never as
-  the agent or any other identity. One package per commit; one-line lowercase
-  subject `<pkg>: <short desc>`. (A `pre-commit` hook enforces this — install it
-  once with `scripts/install-git-hooks.sh`.)
+  the agent or any other identity. One package per commit. Subject style is
+  per-repo: `rocm-specs`/`rocm-specs-7.2.4` (private dev repos) take a one-line
+  lowercase `<pkg>: <short desc>`; `openRuyi` is the official distro repo —
+  follow its own conventions there (e.g. `SPECS: <pkg>: Update to <ver>`), not
+  ours. (A `pre-commit` hook enforces the identity — install it once with
+  `scripts/install-git-hooks.sh`.)
 - **Sources live in `src/`, never `/tmp`.** Clone or download upstream sources
   and tarballs into `src/` (grep-able and reused across sessions); keep the
   tarball after extracting. Never fetch or extract source into `/tmp`.
@@ -20,8 +23,10 @@ skills teach; they live here so no agent has to load a skill to know them.
   agent creates — build/query scripts, RPMs pulled from OBS, intermediate
   outputs, logs — goes under the workspace-local `tmp/` (gitignored, kept across
   sessions), not the host `/tmp`, which parallel agents share and clobber.
-  (`scratchpad/` is Claude Code's own auto-scratch; everything else goes in
-  `tmp/`.) Paths *inside* the QEMU VM such as `openruyi@localhost:/tmp/` are the
+  (Sole exception: the session scratchpad directory that the Claude Code
+  harness itself provides and manages, outside the workspace — files the
+  harness puts there may stay there; every file an agent places by its own
+  choice goes in `tmp/`.) Paths *inside* the QEMU VM such as `openruyi@localhost:/tmp/` are the
   guest's own filesystem and stay as-is.
 - **Patches must be tool-generated.** Never hand-write a unified diff — download
   the upstream `.patch`, or use `diff -Naur`, or `git format-patch`; then edit
@@ -71,7 +76,8 @@ your task matches a skill by reading its frontmatter `description`:
 | Skill | When to use |
 |---|---|
 | `openruyi-rocm-packaging` | Any ROCm spec task: add, upgrade, fix a build, reformat a `.spec`, trigger OBS, etc. |
-| `rocm-llvm-bump` | ROCm build fails with LLVM/clang version-drift symptoms (missing static libs, gated builtins, relocated clang headers, API renames). Companion to `openruyi-rocm-packaging`. |
+| `llvm-drift` | ROCm build fails with LLVM/clang version-drift symptoms (missing static libs, gated builtins, relocated clang headers, API renames). Companion to `openruyi-rocm-packaging`. |
+| `grill-me` | **Only when the user explicitly asks for it** (`/grill-me`, "grill me", or a direct request to be grilled). A relentless plan/design interview. Never auto-trigger it — not even when a task would obviously benefit from stress-testing a plan. |
 
 **To load a skill:** read `.claude/skills/<skill-name>/SKILL.md` in full, then
 follow the workflow it describes.
