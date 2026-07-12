@@ -28,13 +28,18 @@ RPM distribution. openRuyi uses **RPM 4.20+ declarative builds**. The
 authoritative packaging guide lives in this workspace at
 `homepage/docs/packaging-guidelines/` — consult it when a rule here is unclear.
 
-## Runtime: run commands from the workspace root
+## Runtime and path terminology
 
-The working environment is native Linux: `osc` and `git` are on PATH. **Run every
-command from the workspace root** — your session's working directory, i.e. the
-`package-workflow` checkout (confirm with `git rev-parse --show-toplevel`). **All
-paths in this skill are relative to that root** (`rocm-specs`, `log/`,
-`scripts/…`), so nothing is tied to a specific machine; `$` works normally.
+The working environment is native Linux: `osc` and `git` are on PATH. In this
+skill, **workspace root** means the `package-workflow/` directory containing
+`AGENTS.md`, `rocm-specs/`, `log/`, and `scripts/`; it never means the filesystem
+root `/`. A **spec repo root** is one of the nested Git repositories such as
+`rocm-specs/` or `rocm-specs-7.2.4/`.
+
+Start commands from the workspace root and resolve all documented paths from
+there. For commands that require working-copy context, enter the specific
+checkout in the command itself, e.g. `cd home:Sakura286:ROCm_724 && osc ...` or
+`cd rocm-specs-7.2.4 && pre-commit ...`.
 
 If you are ever driven from a Windows host instead (PowerShell, `osc` not on
 PATH), every osc/git command must be wrapped through WSL — the wrapper, the
@@ -160,7 +165,11 @@ and only write the **deltas**. Full details and the Fedora→openRuyi reformatti
 checklist are in `reference/declarative-build.md`; the distro's own docs are under
 `homepage/docs/packaging-guidelines/buildsystems/`.
 
-- `%global toolchain clang` — the entire ROCm stack builds with clang, not gcc.
+- Use `%global toolchain clang` for code compiled through HIP/hipcc or ROCm
+  device compilation. Do not force clang solely because a package belongs to
+  the ROCm stack: a host-only C/C++ component that does not invoke hipcc may use
+  GCC when upstream or a verified reference build supports it. Document the
+  boundary in the spec and verify the resulting runtime path.
 - `BuildSystem: cmake | pyproject | autotools | meson | golang | rust`.
 - `BuildOption(<section>):  <opts>` — **two spaces** after the colon, and **always**
   name the section (`conf`, `build`, `install`, `generate_buildrequires`, `check`).
@@ -180,7 +189,13 @@ checklist are in `reference/declarative-build.md`; the distro's own docs are und
   `CMakeLists.txt`.
 
 A compact, real example is `rocm-specs/SPECS/rccl/rccl.spec` (cmake);
-`rocm-specs/SPECS/python-triton/python-triton.spec` shows the pyproject variant.
+for pyproject formatting, select a current sibling spec with comparable build
+steps rather than treating one package's native-build strategy as a general rule.
+
+**Local parser limitation:** a host `rpmspec -P` without openRuyi's RPM 4.20+
+declarative macros may reject a valid spec with `Unknown buildsystem`. Treat
+repository pre-commit hooks and an openRuyi buildroot/OBS parse as authoritative;
+use local `rpmspec` only when the matching macros are installed.
 
 ---
 
@@ -254,10 +269,12 @@ osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> a
 osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64 > log/<pkg>-<NN>.log
 ```
 
-**After triggering — arm the watcher, never poll in the foreground.** Builds
-take minutes to hours, so don't sit in a status loop. Instead, once the push (or
-`osc ci`) went through, run `scripts/watch-obs.sh <pkg> [pkg...]` under the
-**Monitor tool** with `persistent: true` (builds outlive any timeout). It
+**After triggering:** if the requested outcome includes finishing the build,
+fixing failures, or testing the RPM, arm the watcher; if the user only requested
+a commit/push/trigger, stop after confirming the trigger. Never poll a long build
+in the foreground. For a watched build, run
+`scripts/watch-obs.sh <pkg> [pkg...]` under the **Monitor tool** with
+`persistent: true` (builds outlive any timeout). It
 confirms the trigger landed, then watches the `amd64_build/x86_64` gate row to a
 final state; each stdout line is an event that wakes you. **For a ROCm 7.2.4
 build the mainline defaults are wrong** — set `PRJ=home:Sakura286:ROCm_724` and
@@ -281,7 +298,7 @@ it**, or when verification is needed during packaging/fixing. See
 
 | Environment | Arch | Speed | Use for |
 |---|---|---|---|
-| QEMU VM | x86_64 | Fast (KVM) | Default — all x86_64 verification |
+| QEMU VM | x86_64 | Fast (KVM) | RPM install/import/link and CPU-side runtime checks; ROCm device execution only with GPU passthrough and `/dev/kfd` |
 | Docker | riscv64 | Slow (emulated) | riscv64 verification only |
 
 The full per-environment flow — download the RPM from OBS, SCP, `dnf install`,

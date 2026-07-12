@@ -4,7 +4,10 @@ Two environments for verifying built RPMs in a real openRuyi system.
 
 ## QEMU VM (x86_64) — preferred
 
-KVM-accelerated, native speed. Use for all x86_64 build verification.
+KVM-accelerated, native speed. Use it for x86_64 RPM installation, dependency
+resolution, imports, dynamic linking, binaries, and CPU-side runtime tests. Do
+not claim ROCm device execution unless the VM has GPU passthrough, `/dev/kfd`, a
+render node, and a working `rocminfo`.
 
 ### Prerequisites
 
@@ -49,28 +52,44 @@ dnf resolves dependencies across Base + OBS repos automatically.
 
 ### Test workflow
 
-1. **SCP the RPM into the VM:**
+1. **Update the Base baseline before installing the test package:**
+   ```
+   ssh -p 2222 openruyi@localhost \
+     "echo openruyi | sudo -S dnf upgrade -y --disablerepo=obs-rocm"
+   ```
+   A package built against the latest Base must be tested against the latest
+   Base, not against stale packages retained in a long-lived VM.
+
+2. **Check GPU capability when the test needs ROCm device execution:**
+   ```
+   ssh -p 2222 openruyi@localhost \
+     "test -e /dev/kfd && ls /dev/dri/renderD* && rocminfo"
+   ```
+   If this fails, continue with install/import/link/CPU-side checks but report
+   that no ROCm device kernel was executed.
+
+3. **SCP the RPM into the VM:**
    ```
    scp -P 2222 <pkg>.rpm openruyi@localhost:/tmp/
    ```
 
-2. **Install with dependency resolution:**
+4. **Install with dependency resolution:**
    ```
    ssh -p 2222 openruyi@localhost "echo openruyi | sudo -S dnf install -y /tmp/<pkg>.rpm"
    ```
 
-3. **Verify installation:**
+5. **Verify installation:**
    ```
    ssh -p 2222 openruyi@localhost "rpm -q <pkg>"
    ssh -p 2222 openruyi@localhost "rpm -ql <pkg> | head -20"
    ```
 
-4. **Python import test (for Python packages):**
+6. **Python import test (for Python packages):**
    ```
    ssh -p 2222 openruyi@localhost "python3 -c 'import <module>'"
    ```
 
-5. **Binary execution test (if applicable):**
+7. **Binary execution test (if applicable):**
    ```
    ssh -p 2222 openruyi@localhost "<binary> --version"
    ```

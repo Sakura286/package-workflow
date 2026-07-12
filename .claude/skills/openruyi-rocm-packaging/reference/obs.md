@@ -42,11 +42,12 @@ project name live in `openruyi-obs/.osc/`).
 
 ## Running osc
 
-`osc` and `git` are on PATH; run every command **directly from the workspace root**
-(all examples here use the bare form). Credentials are cached, so osc runs
-non-interactively; inside an OBS checkout the apiurl is stored in `.osc/`, so plain
-`osc <cmd>` works without `-A`. (If you are driven from a Windows host instead,
-wrap every osc/git command through WSL — see `windows-wsl.md`.)
+`osc` and `git` are on PATH. Start from the **workspace root** defined in
+`SKILL.md`; when a command needs working-copy context, enter that OBS checkout in
+the command itself. Credentials are cached, so osc runs non-interactively; inside
+an OBS checkout the apiurl is stored in `.osc/`, so plain `osc <cmd>` works
+without `-A`. (If you are driven from a Windows host instead, wrap every osc/git
+command through WSL — see `windows-wsl.md`.)
 
 ## Commands
 
@@ -188,9 +189,11 @@ osc ci -m "<pkg>: init"
 ```
 
 `osc ci` uploads `_service`, and OBS runs it to pull the spec from git and build.
-After a clean `ci`, arm the watcher (see above) instead of polling — the `ci`
-itself ran the service, so use `SKIP_TRIGGER_CHECK=1` if the spec commit was
-already on `main` (or `7.2.4`) before the package existed on OBS.
+After a clean `ci`, arm the watcher when the requested outcome includes a
+completed build, failure repair, or testing; otherwise stop after confirming the
+trigger. The `ci` itself ran the service, so a watched build may use
+`SKIP_TRIGGER_CHECK=1` if the spec commit was already on `main` (or `7.2.4`)
+before the package existed on OBS.
 
 ### `_service` template (current form, with `exclude`)
 

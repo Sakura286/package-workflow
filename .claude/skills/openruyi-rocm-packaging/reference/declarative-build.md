@@ -26,8 +26,10 @@ of spelling out `%prep`/`%build`/`%install` boilerplate.
 
 ## cmake specifics
 
-`BuildRequires:  cmake` (gcc is preinstalled; clang stack adds `%global toolchain
-clang` + `BuildRequires: clang`). The macros (`/usr/lib/rpm/macros.d/macros.cmake`)
+`BuildRequires:  cmake` (gcc is preinstalled; HIP/hipcc or ROCm device builds add
+`%global toolchain clang` + `BuildRequires: clang`). A host-only C/C++ component
+that never invokes hipcc may use GCC when supported and verified. The macros
+(`/usr/lib/rpm/macros.d/macros.cmake`)
 already preset, so **don't repeat these**:
 
 - `CMAKE_BUILD_TYPE = RelWithDebInfo` — never pass `-DCMAKE_BUILD_TYPE`.
@@ -63,9 +65,9 @@ BuildRequires:  pkgconfig(python3)
   modules with `BuildOption(check):  -e 'pkg.tests*'` and a comment saying why.
   Add pytest with `%check -a` + `%pytest`.
 - A project can ship `pyproject.toml` yet not fit this system (custom build steps,
-  bundled native builds). `python-triton` is exactly that case — it keeps
-  `BuildSystem: pyproject` but builds a pinned LLVM in `%build -p` first; read it
-  when a Python package needs heavy native work.
+  bundled native builds). Keep `BuildSystem: pyproject`, express only the custom
+  pre-build environment/steps as declarative stage deltas, and use a current
+  sibling with comparable complexity as a formatting reference.
 
 ## Fedora → openRuyi reformatting checklist
 
@@ -74,7 +76,8 @@ When adapting a Fedora rawhide spec (`rpms/<pkg>/<pkg>.spec`) into
 
 1. **SPDX header** — add the CHEN-Xuan-only block (SKILL.md) if absent; preserve an
    existing header otherwise.
-2. **Toolchain** — add `%global toolchain clang` for ROCm packages.
+2. **Toolchain** — add `%global toolchain clang` for HIP/hipcc or ROCm device
+   compilation. Allow a documented, verified GCC exception for host-only code.
 3. **Source = release tarball** — point `Source0:` at the official upstream release
    archive (not an `archive/<commit>.tar.gz`), and add `#!RemoteAsset:  sha256:<h>`
    immediately above it (hash the downloaded tarball with `sha256sum`).
@@ -98,13 +101,14 @@ When adapting a Fedora rawhide spec (`rpms/<pkg>/<pkg>.spec`) into
 
 ## ROCm stack patterns worth knowing
 
-- `%global toolchain clang` is mandatory across the stack.
+- clang is the default for HIP/hipcc and ROCm device compilation; host-only code
+  may use a documented, verified GCC toolchain.
 - GPU targets come from a shared macro, e.g. `-DGPU_TARGETS=%{rocm_gpu_list_default}`.
 - Long AMDGPU device links can run for hours producing no output; some specs add a
   heartbeat loop in `%build` so the builder isn't killed for silence (see `rccl`).
-- Big links (bundled LLVM, pytorch) cap parallelism by RAM and may disable LTO/dwz
-  (`%global _lto_cflags %{nil}`, `_find_debuginfo_dwz_opts %{nil}`) — see
-  `python-triton`, `python-torch`.
+- Big links cap parallelism by RAM and may disable LTO/dwz
+  (`%global _lto_cflags %{nil}`, `_find_debuginfo_dwz_opts %{nil}`); select a
+  current large native package as the implementation reference.
 
 ## Debugging tips
 

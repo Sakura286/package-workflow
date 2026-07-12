@@ -266,6 +266,8 @@ For x86_64 (QEMU VM):
    start it and wait — never start it yourself
 2. Download the RPM from OBS: `osc api "/build/.../<pkg>/<rpm>" > tmp/<rpm>`
 3. SCP into VM: `scp -P 2222 tmp/<rpm> openruyi@localhost:/tmp/`
-4. Install: `ssh ... "echo openruyi | sudo -S dnf install -y /tmp/<rpm>"`
-5. Verify: `rpm -q`, Python import, binary test
-6. **Cleanup:** `ssh ... "echo openruyi | sudo -S dnf remove -y <pkg> && echo openruyi | sudo -S dnf autoremove -y"`
+4. Update Base first: `ssh ... "echo openruyi | sudo -S dnf upgrade -y --disablerepo=obs-rocm"`
+5. Install: `ssh ... "echo openruyi | sudo -S dnf install -y /tmp/<rpm>"`
+6. Verify: `rpm -q`, Python import, binary test; require `/dev/kfd` and working
+   `rocminfo` before claiming ROCm device execution
+7. **Cleanup:** `ssh ... "echo openruyi | sudo -S dnf remove -y <pkg> && echo openruyi | sudo -S dnf autoremove -y"`

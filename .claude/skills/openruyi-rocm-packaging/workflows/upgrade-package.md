@@ -37,9 +37,17 @@ tarball, and update the `#!RemoteAsset:  sha256:` line above it:
 
 ```bash
 # example for a github release tarball — save to src/ for reuse
-curl -fL -o src/<pkg>.tar.gz '<resolved Source0 URL>'
-sha256sum src/<pkg>.tar.gz
+curl -fL -o src/<pkg>.tar.gz.part '<resolved Source0 URL>'
+sha256sum src/<pkg>.tar.gz.part
+gzip -t src/<pkg>.tar.gz.part
+tar -tf src/<pkg>.tar.gz.part >/dev/null
+mv src/<pkg>.tar.gz.part src/<pkg>.tar.gz
 ```
+
+The example is for gzip tarballs; use the matching integrity/listing command for
+another archive format. Do not resume a partial download unless the server is
+confirmed to honor the byte range with `206 Partial Content`—an incorrectly
+appended response can leave a readable archive with trailing garbage.
 
 For PyPI packages you can read the sha256 directly off the PyPI release page.
 Extract the tarball in `src/` (e.g. `tar xf src/<pkg>.tar.gz -C src/`) so you can
@@ -71,10 +79,9 @@ A new version may change what gets installed or how it builds. Check for:
   `-static` imported targets, gated AMDGPU builtins, relocated clang headers. When
   that happens, use the `llvm-drift` skill.
 - **Cross-package version coupling.** Some packages pin a sibling that must move in
-  lockstep — e.g. `python-triton` pins `%global llvm_commit` to the value in the new
-  tag's `cmake/llvm-hash.txt`, and `python-torch` is coupled to a specific `magma`.
-  Honor any such note in the spec's comments and update the pinned value + its
-  checksum together.
+  lockstep or a compiler snapshot. Read the new source and the actual consumer
+  requirements, then update every verified pin and checksum together; do not turn
+  one package's current pinning strategy into a general rule.
 
 ## Step 5 — Commit and trigger
 
@@ -87,5 +94,6 @@ git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<p
 
 The push to the GitHub remote triggers the rebuild automatically via the repo's
 Actions workflow (see SKILL.md; `osc … service rr` remains the manual fallback).
-**Then stop — don't poll.** If a patch or option fix is needed afterward, that's
-a separate fix-build pass (→ `workflows/fix-build.md`).
+Stop after confirming the trigger when the user only requested commit/push/trigger.
+If the requested outcome includes a completed build, failure repair, or runtime
+test, arm the watcher and continue through `workflows/fix-build.md` as needed.

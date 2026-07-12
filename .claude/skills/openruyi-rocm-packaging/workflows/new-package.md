@@ -27,7 +27,8 @@ git clone https://src.fedoraproject.org/rpms/<pkg>.git rpms/<pkg>
 - If Fedora **doesn't** have it (clone 404s), write from scratch: use the
   information the user provides plus a sibling spec in `rocm-specs` (or
   `rocm-specs-7.2.4`) as the format template. Good templates: `rccl`, `rocrand`,
-  `hipsparse` (cmake); `python-triton` (pyproject with a bundled build).
+  `hipsparse` (cmake); for pyproject, choose a current sibling with comparable
+  native-build complexity.
 
 Also look at how `rocm-specs` already handles related packages and at this
 package's history if it ever existed: `git -C rocm-specs log --oneline -- SPECS/<pkg>`.
@@ -42,6 +43,9 @@ keeping the archive for reuse).
 
 Read the upstream `CMakeLists.txt` (or `pyproject.toml`) to learn which build
 options the project **actually** uses — you'll prune the spec down to those.
+Download to a `.part` file in `src/`, verify the checksum and archive integrity,
+then rename it atomically; use the validated pattern in `upgrade-package.md` and
+do not resume unless the server is confirmed to honor byte ranges.
 
 ## Step 3 — Write the openRuyi spec
 
@@ -50,7 +54,9 @@ every rule in `reference/declarative-build.md`. The essentials:
 
 1. SPDX header — add the CHEN-Xuan-only block if the base spec has none; otherwise
    preserve the existing header.
-2. `%global toolchain clang` for ROCm packages.
+2. Use `%global toolchain clang` for HIP/hipcc or ROCm device compilation. A
+   host-only component that never invokes hipcc may use GCC when supported by
+   upstream or a verified reference build; document and test the exception.
 3. Real **release tarball** as `Source0:` with `#!RemoteAsset:  sha256:<hash>` just
    above it. Get the hash by downloading the tarball and running `sha256sum`
    (for PyPI packages you can read the sha256 off the PyPI release page instead).
@@ -83,8 +89,10 @@ rewrite. For a spec written clean from the start, a single well-formed
 ## Step 5 — Trigger the OBS build
 
 If the OBS package **already exists**, the push in Step 4 already triggered the
-rebuild via the repo's GitHub Actions workflow — you're done (don't poll; see
-SKILL.md). If it **doesn't exist yet**, that push's Actions run fails with a 404
+rebuild via the repo's GitHub Actions workflow. Stop after confirming the trigger
+when the user only requested commit/push/trigger; when they requested a completed
+build, fix loop, or test, arm the watcher from `reference/obs.md`. If the OBS
+package **doesn't exist yet**, that push's Actions run fails with a 404
 for the new package (expected: OBS has nothing to trigger yet — ignore it);
 create the package (details and the `_service` template in `reference/obs.md`):
 
@@ -106,5 +114,6 @@ cd home:Sakura286:ROCm_724/<pkg> \
   && osc add _service && osc ci -m "<pkg>: init"
 ```
 
-After a clean `osc ci`, **stop**. The user reviews the build and returns a log if a
-fix is needed (→ `workflows/fix-build.md`).
+After a clean `osc ci`, stop only when the requested outcome ends at creating and
+triggering the package. For a requested completed build or test, arm the watcher
+and follow failures through `workflows/fix-build.md`.
