@@ -82,6 +82,14 @@ your task matches a skill by reading its frontmatter `description`:
 **To load a skill:** read `.claude/skills/<skill-name>/SKILL.md` in full, then
 follow the workflow it describes.
 
+## Documentation (`doc/`)
+
+`doc/` holds this repo's documentation. Any standalone document an agent or human
+writes — a packaging write-up, a design note, a how-to, a reference — lives under
+`doc/`, not scattered across package directories or the workspace root. Before
+writing something new, skim `doc/` for an existing document to extend instead of
+duplicating.
+
 ## Deferred work (`todo/`)
 
 `todo/` holds one Markdown file per **known-but-deferred** issue — a real bug or
