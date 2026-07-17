@@ -45,9 +45,6 @@ enabled=1
 gpgcheck=0
 ```
 
-For ROCm 7.2.4 testing, update the baseurl to:
-`https://repo.build.openruyi.cn/home:/Sakura286:/ROCm_724/amd64_build/`
-
 dnf resolves dependencies across Base + OBS repos automatically.
 
 ### Test workflow

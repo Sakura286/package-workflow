@@ -3,9 +3,7 @@
 Goal: create a spec file for a package that doesn't exist yet, in openRuyi
 declarative style, then commit and trigger its OBS build.
 
-**Which repo/project to use:**
-- **Mainline** (`rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
+**Repo/project:** `rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`.
 
 Inputs from the user: the package name; sometimes a source URL. Ask only if the
 name is ambiguous or no source can be found.
@@ -17,7 +15,7 @@ name is ambiguous or no source can be found.
 ## Step 1 — Get a reference spec (Fedora rawhide first)
 
 Fedora is the starting point. Clone its spec into `rpms/` (reference only — keep
-its `.git`, never commit it into `rocm-specs` or `rocm-specs-7.2.4`):
+its `.git`, never commit it into `rocm-specs`):
 
 ```bash
 git clone https://src.fedoraproject.org/rpms/<pkg>.git rpms/<pkg>
@@ -25,8 +23,8 @@ git clone https://src.fedoraproject.org/rpms/<pkg>.git rpms/<pkg>
 
 - If Fedora **has** the package, `rpms/<pkg>/<pkg>.spec` is your base to adapt.
 - If Fedora **doesn't** have it (clone 404s), write from scratch: use the
-  information the user provides plus a sibling spec in `rocm-specs` (or
-  `rocm-specs-7.2.4`) as the format template. Good templates: `rccl`, `rocrand`,
+  information the user provides plus a sibling spec in `rocm-specs`
+  as the format template. Good templates: `rccl`, `rocrand`,
   `hipsparse` (cmake); for pyproject, choose a current sibling with comparable
   native-build complexity.
 
@@ -68,17 +66,12 @@ every rule in `reference/declarative-build.md`. The essentials:
    use `%autorelease` and `%autochangelog`.
 7. Prune cmake options to those present in the upstream `CMakeLists.txt`.
 
-**Where to create the spec:**
-- **Mainline**: `rocm-specs/SPECS/<pkg>/<pkg>.spec`
-- **ROCm 7.2.4 testing**: `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec`
+**Where to create the spec:** `rocm-specs/SPECS/<pkg>/<pkg>.spec`
 
 ## Step 4 — Commit
 
 ```bash
-# Mainline
 git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: init" && git -C rocm-specs push github main
-# ROCm 7.2.4 testing
-git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: init" && git -C rocm-specs-7.2.4 push origin 7.2.4
 ```
 
 If you want to mirror the historical two-step (import, then reformat), make the
@@ -103,14 +96,6 @@ cd home:Sakura286:ROCm_PyTorch_Submit \
   && cp python-torch/_service <pkg>/_service
 # edit <pkg>/_service: change the extract path to SPECS/<pkg>/*
 cd home:Sakura286:ROCm_PyTorch_Submit/<pkg> \
-  && osc add _service && osc ci -m "<pkg>: init"
-
-# ROCm 7.2.4 testing
-cd home:Sakura286:ROCm_724 \
-  && osc mkpac <pkg> \
-  && cp ../home:Sakura286:ROCm_PyTorch_Submit/python-torch/_service <pkg>/_service
-# edit <pkg>/_service: change the extract path to SPECS/<pkg>/* AND revision to 7.2.4
-cd home:Sakura286:ROCm_724/<pkg> \
   && osc add _service && osc ci -m "<pkg>: init"
 ```
 

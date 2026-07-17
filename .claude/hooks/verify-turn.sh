@@ -62,7 +62,7 @@ check_spec() {  # <repo-dir> <pkg>
     fi
 }
 
-for repo in rocm-specs rocm-specs-7.2.4; do
+for repo in rocm-specs; do
     d="$ROOT/$repo"
     git -C "$d" rev-parse --git-dir >/dev/null 2>&1 || continue
     while IFS= read -r pkg; do

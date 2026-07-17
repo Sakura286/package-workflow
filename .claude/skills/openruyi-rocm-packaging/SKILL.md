@@ -8,9 +8,8 @@ description: >-
   Also use it for any related step — writing or reformatting a .spec under
   rocm-specs/SPECS, converting a Fedora spec to openRuyi's declarative style,
   refreshing a Source/sha256/#!RemoteAsset, rebasing patches, committing spec
-  changes as CHEN Xuan, or triggering/fetching builds on OBS (osc, projects
-  home:Sakura286:ROCm_PyTorch_Submit for mainline or home:Sakura286:ROCm_724 for
-  ROCm 7.2.4 testing). Trigger even when the user only names a package and an
+  changes as CHEN Xuan, or triggering/fetching builds on OBS (osc, project
+  home:Sakura286:ROCm_PyTorch_Submit). Trigger even when the user only names a package and an
   action ("打 half 这个包", "升级 rccl 到 7.2", "修一下 hipblaslt 的构建"), or pastes a build
   error from the ROCm stack, without mentioning "spec" or "OBS".
 ---
@@ -34,12 +33,12 @@ The working environment is native Linux: `osc` and `git` are on PATH. In this
 skill, **workspace root** means the `package-workflow/` directory containing
 `AGENTS.md`, `rocm-specs/`, `log/`, and `scripts/`; it never means the filesystem
 root `/`. A **spec repo root** is one of the nested Git repositories such as
-`rocm-specs/` or `rocm-specs-7.2.4/`.
+`rocm-specs/`.
 
 Start commands from the workspace root and resolve all documented paths from
 there. For commands that require working-copy context, enter the specific
-checkout in the command itself, e.g. `cd home:Sakura286:ROCm_724 && osc ...` or
-`cd rocm-specs-7.2.4 && pre-commit ...`.
+checkout in the command itself, e.g. `cd home:Sakura286:ROCm_PyTorch_Submit && osc ...`
+or `cd rocm-specs && pre-commit ...`.
 
 If you are ever driven from a Windows host instead (PowerShell, `osc` not on
 PATH), every osc/git command must be wrapped through WSL — the wrapper, the
@@ -49,7 +48,7 @@ PATH), every osc/git command must be wrapped through WSL — the wrapper, the
 
 | The user wants to… | Read |
 |---|---|
-| Add a brand-new package to `rocm-specs` or `rocm-specs-7.2.4` | `workflows/new-package.md` |
+| Add a brand-new package to `rocm-specs` | `workflows/new-package.md` |
 | Bump an existing package to a new version | `workflows/upgrade-package.md` |
 | Fix a failing build from the latest log | `workflows/fix-build.md` |
 
@@ -63,11 +62,9 @@ All three end the same way: commit to the spec repo and trigger the OBS build.
 The conventions below apply to every workflow — read them first, then open the
 workflow file. For depth, the workflow files point into `reference/`.
 
-**Which repo/project to use:**
-- **Mainline** (`rocm-specs/main` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4/7.2.4` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
-
-**Default rule:** Unless explicitly specified otherwise, all fixes and changes target the **mainline** (`rocm-specs` folder, not `rocm-specs-7.2.4`).
+**Repo/project:** `rocm-specs/main` → `home:Sakura286:ROCm_PyTorch_Submit` (production).
+(The former ROCm 7.2.4 testing rig was merged into mainline on 2026-07-16 and
+dismantled — see the historical note in `reference/obs.md`.)
 
 ---
 
@@ -78,14 +75,12 @@ Paths are relative to the workspace root (`package-workflow/`).
 | Path | What it is |
 |---|---|
 | `rocm-specs/SPECS/<pkg>/<pkg>.spec` | **Primary spec repo (mainline). Full write access — commit and push freely.** Lives on GitHub: `git@github.com:Sakura286/rocm-specs.git`, branch `main`. Remotes `github` and `origin` both point there; push with `git push github main`. |
-| `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` | **ROCm 7.2.4 testing spec repo.** Cloned from the same GitHub repo, branch `7.2.4`. Remote `origin` points to `git@github.com:Sakura286/rocm-specs.git`. Push with `git push origin 7.2.4`. |
 | `rpms/<pkg>/` | Fedora rawhide reference specs, cloned from `https://src.fedoraproject.org/rpms/<pkg>.git`. Reference only — keep their `.git`, never commit them into `rocm-specs`. |
 | `src/<SourceName>/` | Unpacked upstream source. The directory name is a **fuzzy match** of the package name (see below). **Download tarballs to `src/` as well** (e.g. `src/<pkg>.tar.gz`), not `/tmp/` — keeps them reusable across sessions. |
 | `openRuyi/SPECS/` | The rest of the distro's specs. Reference for format and for how a dependency is packaged. |
 | `openruyi-obs/` | **Read-only** local `osc` checkout of the official openRuyi OBS project `openruyi` (same instance as ours). Reference for how the shipping distro packages a thing; **never commit/push here**. Auto-synced daily via `scripts/sync-openruyi-obs.sh` (cron). See `reference/obs.md`. |
 | `log/<pkg>-<NN>.log` | Build logs, manually sequence-numbered. Sometimes an arch/status suffix (`amdsmi-04-riscv64.log`, `python-torch-02-success.log`). |
 | `home:Sakura286:ROCm_PyTorch_Submit/` | OBS local checkout for mainline (one subdir per OBS package, each with a `_service`). |
-| `home:Sakura286:ROCm_724/` | OBS local checkout for ROCm 7.2.4 testing (one subdir per OBS package, each with a `_service`). |
 | `homepage/docs/packaging-guidelines/` | The openRuyi packaging guide (authoritative). |
 
 ### Matching a package to its source in `src/`
@@ -201,14 +196,13 @@ use local `rpmspec` only when the matching macros are installed.
 
 ## OBS: trigger builds and fetch logs
 
-Two OBS projects are used:
+One OBS project is used:
 
 | Project | Purpose | Repo/Branch |
 |---|---|---|
 | `home:Sakura286:ROCm_PyTorch_Submit` | Mainline ROCm packages (production) | `rocm-specs/main` |
-| `home:Sakura286:ROCm_724` | ROCm 7.2.4 testing | `rocm-specs-7.2.4/7.2.4` |
 
-Both use repo `amd64_build`, arch `x86_64` (some packages also build `riscv64`).
+It uses repo `amd64_build`, arch `x86_64` (some packages also build `riscv64`).
 API: `https://pickaxe.oerv.ac.cn`.
 Full command reference and the `_service` template: `reference/obs.md`.
 
@@ -226,10 +220,8 @@ without `-A`. (On a Windows host, wrap osc/git through WSL — see
 rest is automatic** — each repo's GitHub Actions workflow triggers OBS for every
 package whose `SPECS/<pkg>/` changed.
 
-- **Mainline** (`rocm-specs`): push with `git push github main` —
+- Push `rocm-specs` with `git push github main` —
   triggers `home:Sakura286:ROCm_PyTorch_Submit`.
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4`): push with `git push origin 7.2.4`
-  — triggers `home:Sakura286:ROCm_724`.
 
 (How the trigger works — the Actions workflow, the `runservice` API + token, and
 why a push is the only automatic path — is in `reference/obs.md`.)
@@ -238,10 +230,7 @@ Manual fallback (Actions run failed, or re-trigger without a push) — either
 GitHub → Actions → "Trigger OBS services" → Run workflow with `package=<pkg>`, or:
 
 ```bash
-# Mainline
 osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_PyTorch_Submit <pkg>
-# ROCm 7.2.4 testing
-osc -A https://pickaxe.oerv.ac.cn service rr home:Sakura286:ROCm_724 <pkg>
 ```
 
 To confirm a trigger landed, list the expanded sources — the
@@ -250,10 +239,7 @@ service takes ~1-2 min; the rebuild then schedules automatically). The watcher
 script below performs this check automatically; the manual form is:
 
 ```bash
-# Mainline
 osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_PyTorch_Submit/<pkg>?expand=1"
-# ROCm 7.2.4 testing
-osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_724/<pkg>?expand=1"
 ```
 
 **Create a new OBS package** (only when it doesn't exist yet): see
@@ -263,10 +249,7 @@ osc -A https://pickaxe.oerv.ac.cn api "/source/home:Sakura286:ROCm_724/<pkg>?exp
 number `<NN>`:
 
 ```bash
-# Mainline
 osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64 > log/<pkg>-<NN>.log
-# ROCm 7.2.4 testing
-osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64 > log/<pkg>-<NN>.log
 ```
 
 **After triggering:** if the requested outcome includes finishing the build,
@@ -276,11 +259,8 @@ in the foreground. For a watched build, run
 `scripts/watch-obs.sh <pkg> [pkg...]` under the **Monitor tool** with
 `persistent: true` (builds outlive any timeout). It
 confirms the trigger landed, then watches the `amd64_build/x86_64` gate row to a
-final state; each stdout line is an event that wakes you. **For a ROCm 7.2.4
-build the mainline defaults are wrong** — set `PRJ=home:Sakura286:ROCm_724` and
-`EXPECT_COMMIT` to the 7.2.4 HEAD, or the watcher silently watches the wrong
-project and emits a bogus `TRIGGER-TIMEOUT`. The full reference — events, env
-knobs, gate behavior, the exact 7.2.4 invocation — is `reference/obs.md`.
+final state; each stdout line is an event that wakes you. The full reference — events, env
+knobs, gate behavior — is `reference/obs.md`.
 
 On a `RESULT … failed`, hand to `workflows/fix-build.md` — it runs the
 autonomous fix loop and defines when to stop and ask the user. PushNotification

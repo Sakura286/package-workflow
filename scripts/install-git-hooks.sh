@@ -14,7 +14,7 @@ HOOKS="$ROOT/scripts/git-hooks"
 
 [[ -x "$HOOKS/pre-commit" ]] || { echo "error: $HOOKS/pre-commit missing or not executable" >&2; exit 1; }
 
-for repo in rocm-specs rocm-specs-7.2.4 openRuyi; do
+for repo in rocm-specs openRuyi; do
     d="$ROOT/$repo"
     if git -C "$d" rev-parse --git-dir >/dev/null 2>&1; then
         git -C "$d" config core.hooksPath "$HOOKS"

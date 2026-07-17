@@ -17,7 +17,7 @@ EXPECT="chenxuan@iscas.ac.cn"
 # Sakura286) is a no-op.
 top=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
 case "$(basename "$top")" in
-    rocm-specs|rocm-specs-7.2.4|openRuyi) ;;
+    rocm-specs|openRuyi) ;;
     *) exit 0 ;;
 esac
 

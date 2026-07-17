@@ -8,10 +8,10 @@ These invariants apply to **every** agent working in this repo (Claude Code,
 mimo code, opencode, codebuddy, …) and to humans. They are the same rules the
 skills teach; they live here so no agent has to load a skill to know them.
 
-- **Commit identity.** The spec repos — `rocm-specs`, `rocm-specs-7.2.4`,
-  `openRuyi` — must commit as **`CHEN Xuan <chenxuan@iscas.ac.cn>`**, never as
+- **Commit identity.** The spec repos — `rocm-specs` and `openRuyi` — must
+  commit as **`CHEN Xuan <chenxuan@iscas.ac.cn>`**, never as
   the agent or any other identity. One package per commit. Subject style is
-  per-repo: `rocm-specs`/`rocm-specs-7.2.4` (private dev repos) take a one-line
+  per-repo: `rocm-specs` (private dev repo) takes a one-line
   lowercase `<pkg>: <short desc>`; `openRuyi` is the official distro repo —
   follow its own conventions there (e.g. `SPECS: <pkg>: Update to <ver>`), not
   ours. (A `pre-commit` hook enforces the identity — install it once with

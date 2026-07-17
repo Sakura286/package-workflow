@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse(Bash) guard: spec repos must commit as CHEN Xuan.
 #
-# rocm-specs, rocm-specs-7.2.4 and openRuyi must commit as
+# rocm-specs and openRuyi must commit as
 # CHEN Xuan <chenxuan@iscas.ac.cn> — never as Claude or any other identity.
 # Existing checkouts already have this git config; this guard catches a freshly
 # cloned repo whose identity was never set, and an --author override that isn't

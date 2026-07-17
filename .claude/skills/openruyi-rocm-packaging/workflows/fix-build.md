@@ -3,9 +3,7 @@
 Goal: diagnose a failing OBS build from its log, fix the spec (preferably with a
 properly-sourced patch), commit, and trigger a rebuild.
 
-**Which repo/project to use:**
-- **Mainline** (`rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`): production packages
-- **ROCm 7.2.4 testing** (`rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_724`): testing ROCm 7.2.4 packages
+**Repo/project:** `rocm-specs/SPECS/<pkg>/<pkg>.spec` → `home:Sakura286:ROCm_PyTorch_Submit`.
 
 Inputs from the user: the package name, and usually a hint that it failed. The user
 may have dropped a fresh log in `log/`, or expect you to fetch it.
@@ -21,16 +19,10 @@ may have dropped a fresh log in `log/`, or expect you to fetch it.
 
 ```bash
 # status (optional)
-# Mainline
 osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_PyTorch_Submit <pkg> -r amd64_build -a x86_64 --csv
-# ROCm 7.2.4 testing
-osc -A https://pickaxe.oerv.ac.cn results home:Sakura286:ROCm_724 <pkg> -r amd64_build -a x86_64 --csv
 
 # log -> log/<pkg>-<NN>.log
-# Mainline
 osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_PyTorch_Submit <pkg> amd64_build x86_64 > log/<pkg>-<NN>.log
-# ROCm 7.2.4 testing
-osc -A https://pickaxe.oerv.ac.cn rbl home:Sakura286:ROCm_724 <pkg> amd64_build x86_64 > log/<pkg>-<NN>.log
 ```
 
 Most ROCm packages fail on `x86_64`; some also build `riscv64`. If the failure is
@@ -51,8 +43,7 @@ its frontmatter carries the full symptom catalog, its body the fixes by build
 phase.
 
 Cross-reference:
-- the spec at `rocm-specs/SPECS/<pkg>/<pkg>.spec` (or `rocm-specs-7.2.4/SPECS/<pkg>/<pkg>.spec`
-  for ROCm 7.2.4 testing),
+- the spec at `rocm-specs/SPECS/<pkg>/<pkg>.spec`,
 - the upstream source in `src/<SourceName>/` (fuzzy match) when the error is
   in the code/build, and
 - earlier logs in `log/` for the same package to see what changed.
@@ -96,16 +87,12 @@ repo's history.
    `https://github.com/<org>/<repo>/commit/<hash>`.
 3. **Other distros** — search Fedora bugzilla, Arch AUR/GitLab, Gentoo
    Bugzilla for the same error.
-4. **This repo's history** — check how `rocm-specs` (or `rocm-specs-7.2.4`)
+4. **This repo's history** — check how `rocm-specs`
    handled this package before:
 
 ```bash
-# Mainline
 git -C rocm-specs log --oneline -- SPECS/<pkg>
 git -C rocm-specs show <commit>
-# ROCm 7.2.4 testing
-git -C rocm-specs-7.2.4 log --oneline -- SPECS/<pkg>
-git -C rocm-specs-7.2.4 show <commit>
 ```
 
 ### Fix priority
@@ -124,8 +111,7 @@ commit message body.
 Prefer a **patch** over ad-hoc edits, because patches are reviewable, carry their
 provenance, and survive version bumps:
 
-- Put the patch file in the spec directory (`rocm-specs/SPECS/<pkg>/` or
-  `rocm-specs-7.2.4/SPECS/<pkg>/`), add `PatchN:  <file>` and apply
+- Put the patch file in the spec directory (`rocm-specs/SPECS/<pkg>/`), add `PatchN:  <file>` and apply
   it (autosetup, or `%patch -P N -p1`). Give it a descriptive name and a header
   that explains the change and links the upstream source
   (see `homepage/docs/packaging-guidelines/patches.md`).
@@ -219,9 +205,6 @@ source to credit:
 # Mainline
 git -C rocm-specs add SPECS/<pkg> && git -C rocm-specs commit -m "<pkg>: fix <issue>"   # add -m "<url>" body if citing upstream
 git -C rocm-specs push github main
-# ROCm 7.2.4 testing
-git -C rocm-specs-7.2.4 add SPECS/<pkg> && git -C rocm-specs-7.2.4 commit -m "<pkg>: fix <issue>"   # add -m "<url>" body if citing upstream
-git -C rocm-specs-7.2.4 push origin 7.2.4
 ```
 
 The push to the GitHub remote is all it takes: the repo's Actions workflow
@@ -236,10 +219,6 @@ Don't poll in the foreground; arm the build watcher (Monitor tool,
 ```
 scripts/watch-obs.sh <pkg>
 ```
-
-For a **ROCm 7.2.4** build the watcher defaults to the mainline project and will
-falsely `TRIGGER-TIMEOUT` — set `PRJ=home:Sakura286:ROCm_724` and
-`EXPECT_COMMIT` to the 7.2.4 HEAD (exact invocation: `reference/obs.md`).
 
 - `RESULT <pkg> … failed/unresolvable/broken` → loop back to Step 1: fetch the
   fresh log yourself, fix, push — then TaskStop the old watcher and arm a new one.
